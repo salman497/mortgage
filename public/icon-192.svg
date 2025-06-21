@@ -1,0 +1,23 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <!-- House shape -->
+  <path d="M96 24L36 72v96h120V72L96 24z" fill="#2563eb" stroke="#1e40af" stroke-width="4"/>
+  
+  <!-- Roof -->
+  <path d="M96 24L36 72h120L96 24z" fill="#1e40af"/>
+  
+  <!-- Door -->
+  <rect x="78" y="120" width="36" height="48" fill="#ffffff"/>
+  <circle cx="105" cy="144" r="3" fill="#2563eb"/>
+  
+  <!-- Windows -->
+  <rect x="48" y="96" width="24" height="24" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <rect x="120" y="96" width="24" height="24" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  
+  <!-- Calculator/Dollar elements -->
+  <circle cx="144" cy="48" r="36" fill="#16a34a" stroke="#15803d" stroke-width="4"/>
+  <text x="144" y="68" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48" font-weight="bold">$</text>
+  
+  <!-- Small calculation lines -->
+  <rect x="126" y="36" width="36" height="3" fill="white" opacity="0.8"/>
+  <rect x="126" y="42" width="24" height="3" fill="white" opacity="0.8"/>
+</svg> 
