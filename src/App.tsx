@@ -221,7 +221,7 @@ function App() {
         <Toolbar>
           <Home sx={{ mr: 2 }} />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Mortgage: How Banks Fool Us
+            Understand Your Mortgage - Don't Let Banks Fool You
           </Typography>
           <Button
             color="inherit"
@@ -235,15 +235,6 @@ function App() {
       </AppBar>
 
       <Container maxWidth="lg" sx={{ mt: 3, mb: 3 }}>
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Understanding Your Mortgage
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
-            Discover how mortgages really work and learn strategies to save thousands
-          </Typography>
-        </Box>
-
         <Paper elevation={2}>
           <Tabs
             value={tabValue}
