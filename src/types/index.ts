@@ -4,6 +4,7 @@ export interface MortgageInputs {
   loanTermYears: number;
   extraPayment?: number;
   propertyValue?: number;
+  offsetBalance?: number;
 }
 
 export interface MortgageCalculation {

@@ -67,6 +67,18 @@ const PayoffStrategies: React.FC = () => {
       tip: "Even $100 extra per month can save you 5+ years and $100,000+ in interest"
     },
     {
+      title: "Offset Account",
+      description: "Link a transaction account to your mortgage where the balance reduces interest calculations daily",
+      benefits: [
+        "Interest calculated on (loan balance - offset balance)",
+        "Keep full access to your money for emergencies",
+        "Tax-free interest savings (no tax on 'interest earned')",
+        "Works 24/7 - every dollar counts every day",
+        "Can be more effective than extra repayments"
+      ],
+      tip: "Every $10,000 in offset saves ~$650/year in interest at 6.5% rate - that's like earning 6.5% tax-free!"
+    },
+    {
       title: "Refinancing Strategy",
       description: "Switch to a lower interest rate or shorter loan term",
       benefits: [
@@ -77,17 +89,6 @@ const PayoffStrategies: React.FC = () => {
       ],
       tip: "Consider refinancing if rates drop by 0.5% or more"
     },
-    {
-      title: "Offset Account",
-      description: "Use a mortgage offset account to reduce interest calculations",
-      benefits: [
-        "Interest calculated on loan minus offset balance",
-        "Keep access to your money",
-        "Tax-free interest savings",
-        "Flexibility for emergencies"
-      ],
-      tip: "Every $10,000 in offset saves ~$650/year in interest at 6.5% rate"
-    }
   ];
 
   return (
@@ -206,6 +207,71 @@ const PayoffStrategies: React.FC = () => {
           </AccordionDetails>
         </Accordion>
       ))}
+
+      <Card elevation={1} sx={{ mt: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+            <TrendingUp sx={{ mr: 1 }} />
+            Offset Account: The Smart Money Strategy
+          </Typography>
+          
+          <Alert severity="success" sx={{ mb: 2 }}>
+            <strong>Pro Tip:</strong> An offset account can be more powerful than extra repayments because 
+            you keep access to your money while still saving on interest!
+          </Alert>
+          
+          <Typography variant="body1" paragraph>
+            <strong>How it works:</strong> Your offset account balance is subtracted from your loan balance 
+            before calculating daily interest. So if you have a $500,000 loan and $50,000 in offset, 
+            you only pay interest on $450,000.
+          </Typography>
+          
+          <Box sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Offset Account Example
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              • Loan Balance: $500,000 at 6.5%
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              • Offset Balance: $50,000
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              • Interest calculated on: $450,000
+            </Typography>
+            <Typography variant="body2" color="success.main">
+              • <strong>Annual Interest Saving: $3,250</strong>
+            </Typography>
+            <Typography variant="body2" color="info.main">
+              • Plus you keep access to your $50,000!
+            </Typography>
+          </Box>
+          
+          <Typography variant="subtitle2" gutterBottom>
+            Offset vs Extra Repayments:
+          </Typography>
+          <List dense>
+            <ListItem>
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <CheckCircle color="success" fontSize="small" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Offset: Keep money accessible for emergencies or opportunities"
+                secondary="Perfect for irregular income or those building cash reserves"
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <CheckCircle color="info" fontSize="small" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Extra Repayments: Permanently reduce loan balance"
+                secondary="Better if you're disciplined and won't need the money back"
+              />
+            </ListItem>
+          </List>
+        </CardContent>
+      </Card>
 
       <Card elevation={1} sx={{ mt: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
         <CardContent>

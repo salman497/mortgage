@@ -86,11 +86,16 @@ export const calculateMortgageDetails = (inputs: MortgageInputs): MortgageCalcul
     inputs.loanTermYears
   );
   
-  const totalPayment = monthlyPayment * inputs.loanTermYears * 12;
-  const totalInterest = totalPayment - inputs.loanAmount;
+  // Calculate actual total interest using payment schedule to account for offset
+  const paymentSchedule = generatePaymentSchedule(inputs);
+  const totalInterest = paymentSchedule.reduce((sum, entry) => sum + entry.interest, 0);
+  const totalPayment = totalInterest + inputs.loanAmount;
   
   const monthlyInterestRate = inputs.interestRate / 100 / 12;
-  const monthlyInterest = inputs.loanAmount * monthlyInterestRate;
+  
+  // Calculate interest considering offset balance
+  const effectiveLoanBalance = Math.max(0, inputs.loanAmount - (inputs.offsetBalance || 0));
+  const monthlyInterest = effectiveLoanBalance * monthlyInterestRate;
   const monthlyPrincipal = monthlyPayment - monthlyInterest;
   
   const lmiAmount = inputs.propertyValue 
@@ -113,7 +118,24 @@ export const calculateMortgageDetails = (inputs: MortgageInputs): MortgageCalcul
 };
 
 /**
- * Generate payment schedule with extra payments
+ * Calculate offset account benefits
+ */
+export const calculateOffsetBenefits = (inputs: MortgageInputs) => {
+  const offsetBalance = inputs.offsetBalance || 0;
+  const monthlyInterestSavings = (offsetBalance * inputs.interestRate) / 100 / 12;
+  const annualInterestSavings = (offsetBalance * inputs.interestRate) / 100;
+  const effectiveInterestRate = inputs.interestRate * (1 - offsetBalance / inputs.loanAmount);
+  
+  return {
+    monthlyInterestSavings,
+    annualInterestSavings,
+    effectiveInterestRate,
+    taxFreeEquivalent: annualInterestSavings, // Offset savings are tax-free
+  };
+};
+
+/**
+ * Generate payment schedule with extra payments and offset account
  */
 export const generatePaymentSchedule = (
   inputs: MortgageInputs,
@@ -128,11 +150,15 @@ export const generatePaymentSchedule = (
   
   let balance = inputs.loanAmount;
   const monthlyRate = inputs.interestRate / 100 / 12;
+  const offsetBalance = inputs.offsetBalance || 0;
   let month = 0;
   
   while (balance > 0.01 && month < inputs.loanTermYears * 12) {
     month++;
-    const interestPayment = balance * monthlyRate;
+    
+    // Calculate interest on effective balance (loan balance minus offset)
+    const effectiveBalance = Math.max(0, balance - offsetBalance);
+    const interestPayment = effectiveBalance * monthlyRate;
     const principalPayment = Math.min(monthlyPayment - interestPayment + extraPayment, balance);
     
     balance -= principalPayment;
@@ -173,10 +199,13 @@ export const comparePayoffStrategies = (inputs: MortgageInputs): ComparisonScena
   let weeklyBalance = inputs.loanAmount;
   let weeklyWeeks = 0;
   let weeklyTotalInterest = 0;
+  const offsetBalance = inputs.offsetBalance || 0;
   
   while (weeklyBalance > 0.01 && weeklyWeeks < inputs.loanTermYears * 52) {
     weeklyWeeks++;
-    const weeklyInterestPayment = weeklyBalance * weeklyInterestRate;
+    // Account for offset in weekly calculation
+    const effectiveWeeklyBalance = Math.max(0, weeklyBalance - offsetBalance);
+    const weeklyInterestPayment = effectiveWeeklyBalance * weeklyInterestRate;
     const weeklyPrincipalPayment = Math.min(weeklyPayment - weeklyInterestPayment, weeklyBalance);
     
     weeklyBalance -= weeklyPrincipalPayment;

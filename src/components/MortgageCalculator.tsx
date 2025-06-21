@@ -21,6 +21,7 @@ const MortgageCalculator: React.FC = () => {
     interestRate: 6.5,
     loanTermYears: 30,
     propertyValue: 625000,
+    offsetBalance: 0,
   });
 
   const [results, setResults] = useState<MortgageCalculation | null>(null);
@@ -147,6 +148,35 @@ const MortgageCalculator: React.FC = () => {
                 />
               </Box>
 
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Offset Account Balance
+                  </Typography>
+                  <Tooltip title="Money in your offset account reduces interest daily - every dollar counts!">
+                    <IconButton size="small">
+                      <Info fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+                <TextField
+                  fullWidth
+                  type="number"
+                  value={inputs.offsetBalance || 0}
+                  onChange={handleInputChange('offsetBalance')}
+                  InputProps={{
+                    startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
+                  }}
+                />
+                {inputs.offsetBalance && inputs.offsetBalance > 0 && (
+                  <Alert severity="success" sx={{ mt: 1 }}>
+                    <strong>Smart move!</strong> Your ${formatCurrency(inputs.offsetBalance).replace('$', '')} offset 
+                    saves you ~${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12).replace('$', '')} 
+                    per month in interest!
+                  </Alert>
+                )}
+              </Box>
+
               {loanToValueRatio > 80 && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
                   Your LVR is {formatPercentage(loanToValueRatio)}. 
@@ -250,24 +280,67 @@ const MortgageCalculator: React.FC = () => {
       </Box>
 
       {results && (
-        <Card elevation={1} sx={{ mt: 3 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              The Reality Check
-            </Typography>
-            <Alert severity="info" sx={{ mb: 2 }}>
-              <strong>Did you know?</strong> You're paying the bank{' '}
-              <strong>{formatCurrency(results.totalInterest)}</strong> in interest alone! 
-              That's {formatPercentage((results.totalInterest / inputs.loanAmount) * 100)} 
-              of your original loan amount.
-            </Alert>
-            <Typography variant="body2" color="text.secondary">
-              Every month, you're paying <strong>{formatCurrency(results.monthlyInterest)}</strong> 
-              to the bank as profit, while only <strong>{formatCurrency(results.monthlyPrincipal)}</strong> 
-              goes toward actually owning your home.
-            </Typography>
-          </CardContent>
-        </Card>
+        <>
+          <Card elevation={1} sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                The Reality Check
+              </Typography>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <strong>Did you know?</strong> You're paying the bank{' '}
+                <strong>{formatCurrency(results.totalInterest)}</strong> in interest alone! 
+                That's {formatPercentage((results.totalInterest / inputs.loanAmount) * 100)} 
+                of your original loan amount.
+              </Alert>
+              <Typography variant="body2" color="text.secondary">
+                Every month, you're paying <strong>{formatCurrency(results.monthlyInterest)}</strong> 
+                to the bank as profit, while only <strong>{formatCurrency(results.monthlyPrincipal)}</strong> 
+                goes toward actually owning your home.
+              </Typography>
+            </CardContent>
+          </Card>
+
+          {inputs.offsetBalance && inputs.offsetBalance > 0 && (
+            <Card elevation={1} sx={{ mt: 3, bgcolor: 'success.light' }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  🎉 Offset Account Benefits
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      Monthly Interest Savings
+                    </Typography>
+                    <Typography variant="h5" color="success.main">
+                      {formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      Annual Interest Savings
+                    </Typography>
+                    <Typography variant="h5" color="success.main">
+                      {formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100)}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      Effective Interest Rate
+                    </Typography>
+                    <Typography variant="h5" color="info.main">
+                      {formatPercentage(inputs.interestRate * (1 - inputs.offsetBalance / inputs.loanAmount))}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Alert severity="success" sx={{ mt: 2 }}>
+                  <strong>Tax-Free Savings:</strong> Unlike term deposits or savings accounts, 
+                  offset account savings are not taxable income. It's like earning {formatPercentage(inputs.interestRate)} 
+                  tax-free on your money!
+                </Alert>
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
     </Box>
   );

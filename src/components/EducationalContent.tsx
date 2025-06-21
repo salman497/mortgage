@@ -277,31 +277,155 @@ const EducationalContent: React.FC = () => {
           </CardContent>
         </Card>
 
+        <Card elevation={1} sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Fixed vs Variable Interest Rates: The Critical Decision
+            </Typography>
+            
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <strong>This choice can cost or save you tens of thousands!</strong> Understanding when to choose 
+              fixed vs variable rates is crucial for your mortgage strategy.
+            </Alert>
+
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 3 }}>
+              <Box sx={{ flex: 1, bgcolor: 'primary.light', p: 2, borderRadius: 1 }}>
+                <Typography variant="h6" gutterBottom color="primary.main">
+                  Fixed Rate
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  Your interest rate stays locked for a chosen period (typically 1-5 years).
+                </Typography>
+                <Typography variant="subtitle2" gutterBottom>Pros:</Typography>
+                <List dense>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Payment certainty - budget with confidence" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Protection if rates rise" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Peace of mind for conservative borrowers" />
+                  </ListItem>
+                </List>
+                <Typography variant="subtitle2" gutterBottom sx={{ mt: 1 }}>Cons:</Typography>
+                <List dense>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Miss out if rates fall" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Often higher initial rate" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Break fees if you need to exit early" />
+                  </ListItem>
+                </List>
+              </Box>
+
+              <Box sx={{ flex: 1, bgcolor: 'success.light', p: 2, borderRadius: 1 }}>
+                <Typography variant="h6" gutterBottom color="success.main">
+                  Variable Rate
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  Your rate can change based on Reserve Bank decisions and lender policies.
+                </Typography>
+                <Typography variant="subtitle2" gutterBottom>Pros:</Typography>
+                <List dense>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Benefit immediately from rate cuts" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Often lower starting rate" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• More flexibility with extra payments" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• No break fees for early exit" />
+                  </ListItem>
+                </List>
+                <Typography variant="subtitle2" gutterBottom sx={{ mt: 1 }}>Cons:</Typography>
+                <List dense>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Payment uncertainty" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Risk of rising rates" />
+                  </ListItem>
+                  <ListItem sx={{ py: 0 }}>
+                    <ListItemText primary="• Harder to budget long-term" />
+                  </ListItem>
+                </List>
+              </Box>
+            </Box>
+
+            <Box sx={{ bgcolor: 'warning.light', p: 2, borderRadius: 1, mb: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Split Rate: The Best of Both Worlds?
+              </Typography>
+              <Typography variant="body2" paragraph>
+                Many borrowers choose to split their loan - part fixed, part variable. For example:
+                60% fixed for certainty, 40% variable to benefit from rate cuts.
+              </Typography>
+              <Typography variant="body2">
+                <strong>Strategy:</strong> When rates are low, fix more. When rates are high, 
+                keep more variable to benefit from future cuts.
+              </Typography>
+            </Box>
+
+            <Alert severity="warning">
+              <strong>Current Market Context (2024):</strong> With rates at multi-year highs, 
+              many experts suggest keeping variable or short-term fixed to benefit from expected 
+              future rate cuts. However, always consider your personal risk tolerance!
+            </Alert>
+          </CardContent>
+        </Card>
+
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography variant="h6">Interest Rate Types</Typography>
+            <Typography variant="h6">When to Choose Fixed vs Variable</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <List>
+            <Typography variant="subtitle2" gutterBottom>
+              Choose Fixed Rate When:
+            </Typography>
+            <List dense>
               <ListItem>
-                <ListItemText 
-                  primary="Fixed Rate"
-                  secondary="Interest rate stays the same for a set period (1-5 years typically). Provides certainty but may miss out on rate cuts."
-                />
+                <ListItemText primary="• You're on a tight budget and need payment certainty" />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Variable Rate"
-                  secondary="Interest rate can change based on Reserve Bank decisions and lender policies. Can benefit from rate cuts but risk rate rises."
-                />
+                <ListItemText primary="• Interest rates are at historic lows (lock in the good rate)" />
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="Split Rate"
-                  secondary="Portion fixed, portion variable. Provides some certainty while maintaining flexibility."
-                />
+                <ListItemText primary="• Economic indicators suggest rates will rise" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="• You're risk-averse and value peace of mind" />
               </ListItem>
             </List>
+
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
+              Choose Variable Rate When:
+            </Typography>
+            <List dense>
+              <ListItem>
+                <ListItemText primary="• Interest rates are high and likely to fall" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="• You have buffer in your budget for rate rises" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="• You want maximum flexibility with extra payments" />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="• You might refinance or sell within 2-3 years" />
+              </ListItem>
+            </List>
+
+            <Alert severity="success" sx={{ mt: 2 }}>
+              <strong>Professional Tip:</strong> Many borrowers review their fixed vs variable 
+              mix annually based on market conditions and personal circumstances.
+            </Alert>
           </AccordionDetails>
         </Accordion>
 
@@ -355,7 +479,13 @@ const EducationalContent: React.FC = () => {
           <ListItem>
             <ListItemText 
               primary="Offset Account"
-              secondary="A transaction account linked to your mortgage where the balance reduces the interest calculated on your loan"
+              secondary="A transaction account linked to your mortgage where the balance reduces the interest calculated on your loan daily. Every dollar in offset saves you the mortgage interest rate tax-free!"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText 
+              primary="100% Offset vs Partial Offset"
+              secondary="100% offset means every dollar saves the full mortgage rate. Partial offset (60-80%) means you only save a percentage of the rate - always choose 100% offset!"
             />
           </ListItem>
           <ListItem>
