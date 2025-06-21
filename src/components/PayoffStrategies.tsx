@@ -1,0 +1,279 @@
+import React, { useState, useMemo } from 'react';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  Alert,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import { School, ExpandMore, CheckCircle, TrendingUp, Savings } from '@mui/icons-material';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { MortgageInputs, ComparisonScenario } from '../types';
+import { comparePayoffStrategies, formatCurrency } from '../utils/mortgageCalculations';
+
+const PayoffStrategies: React.FC = () => {
+  const [inputs, setInputs] = useState<MortgageInputs>({
+    loanAmount: 500000,
+    interestRate: 6.5,
+    loanTermYears: 30,
+  });
+
+  const scenarios = useMemo(() => {
+    return comparePayoffStrategies(inputs);
+  }, [inputs]);
+
+  const chartData = scenarios.map(scenario => ({
+    name: scenario.name,
+    totalInterest: scenario.totalInterest,
+    payoffTime: scenario.payoffTime,
+    savings: scenario.totalSavings,
+  }));
+
+  const strategies = [
+    {
+      title: "Weekly Payments",
+      description: "Instead of 12 monthly payments, make 52 weekly payments (equivalent to 13 monthly payments per year)",
+      benefits: [
+        "Pay off your loan 4-6 years earlier",
+        "Save tens of thousands in interest",
+        "Align payments with your weekly income",
+        "Build discipline with smaller, frequent payments"
+      ],
+      tip: "Simply divide your monthly payment by 4 and pay weekly"
+    },
+    {
+      title: "Extra Principal Payments",
+      description: "Add extra money to your monthly payment that goes directly to principal",
+      benefits: [
+        "Every extra dollar saves you 2-3 dollars in interest",
+        "Flexible - pay extra when you can afford it",
+        "Dramatic impact even with small amounts",
+        "Compound effect over time"
+      ],
+      tip: "Even $100 extra per month can save you 5+ years and $100,000+ in interest"
+    },
+    {
+      title: "Refinancing Strategy",
+      description: "Switch to a lower interest rate or shorter loan term",
+      benefits: [
+        "Lower interest rate reduces total cost",
+        "Shorter term means faster payoff",
+        "Fixed payment with guaranteed timeline",
+        "One-time effort for long-term savings"
+      ],
+      tip: "Consider refinancing if rates drop by 0.5% or more"
+    },
+    {
+      title: "Offset Account",
+      description: "Use a mortgage offset account to reduce interest calculations",
+      benefits: [
+        "Interest calculated on loan minus offset balance",
+        "Keep access to your money",
+        "Tax-free interest savings",
+        "Flexibility for emergencies"
+      ],
+      tip: "Every $10,000 in offset saves ~$650/year in interest at 6.5% rate"
+    }
+  ];
+
+  return (
+    <Box>
+      <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <School sx={{ mr: 1 }} />
+        Mortgage Payoff Strategies
+      </Typography>
+
+      <Alert severity="info" sx={{ mb: 3 }}>
+        <strong>The Secret Banks Don't Want You to Know:</strong> Small changes to your payment strategy 
+        can save you tens of thousands of dollars and years of payments!
+      </Alert>
+
+      <Card elevation={1} sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Strategy Comparison - Your Loan: {formatCurrency(inputs.loanAmount)} at {inputs.interestRate}%
+          </Typography>
+          
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Strategy</TableCell>
+                  <TableCell align="right">Monthly Payment</TableCell>
+                  <TableCell align="right">Total Interest</TableCell>
+                  <TableCell align="right">Payoff Time</TableCell>
+                  <TableCell align="right">Interest Savings</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {scenarios.map((scenario) => (
+                  <TableRow key={scenario.name}>
+                    <TableCell component="th" scope="row">
+                      <strong>{scenario.name}</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      {formatCurrency(scenario.monthlyPayment)}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography color={scenario.name === 'Minimum Payment' ? 'error' : 'text.primary'}>
+                        {formatCurrency(scenario.totalInterest)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      {scenario.payoffTime.toFixed(1)} years
+                    </TableCell>
+                    <TableCell align="right">
+                      {scenario.totalSavings > 0 ? (
+                        <Chip 
+                          label={formatCurrency(scenario.totalSavings)}
+                          color="success"
+                          size="small"
+                        />
+                      ) : (
+                        <Typography color="text.secondary">Baseline</Typography>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+
+      <Card elevation={1} sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Interest Comparison by Strategy
+          </Typography>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
+              <YAxis tickFormatter={formatCurrency} />
+              <Tooltip formatter={(value) => formatCurrency(value as number)} />
+              <Bar dataKey="totalInterest" fill="#ff6b6b" name="Total Interest" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
+        Detailed Strategy Guide
+      </Typography>
+
+      {strategies.map((strategy, index) => (
+        <Accordion key={index} sx={{ mb: 2 }}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Typography variant="h6">{strategy.title}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              {strategy.description}
+            </Typography>
+            
+            <Typography variant="subtitle2" gutterBottom>
+              Key Benefits:
+            </Typography>
+            <List dense>
+              {strategy.benefits.map((benefit, idx) => (
+                <ListItem key={idx} sx={{ py: 0 }}>
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <CheckCircle color="success" fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={benefit} />
+                </ListItem>
+              ))}
+            </List>
+            
+            <Alert severity="success" sx={{ mt: 2 }}>
+              <strong>Pro Tip:</strong> {strategy.tip}
+            </Alert>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+
+      <Card elevation={1} sx={{ mt: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+            <TrendingUp sx={{ mr: 1 }} />
+            The Compound Effect
+          </Typography>
+          <Typography variant="body1" paragraph>
+            The magic of these strategies lies in compound savings. Every dollar you pay toward principal 
+            early saves you 2-3 dollars in future interest payments. This is because you're not just 
+            saving the interest on that dollar - you're saving the interest on the interest!
+          </Typography>
+          <Typography variant="body2">
+            <strong>Example:</strong> An extra $100/month on a $500,000 loan at 6.5% saves you approximately 
+            $127,000 in interest and pays off your loan 5.5 years earlier!
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Card elevation={1} sx={{ mt: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+            <Savings sx={{ mr: 1 }} />
+            Which Strategy Should You Choose?
+          </Typography>
+          
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <CheckCircle color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="If you have irregular income" 
+                secondary="Choose extra principal payments - flexible and you can adjust based on cash flow"
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <CheckCircle color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="If you have steady weekly income" 
+                secondary="Choose weekly payments - automatic and aligns with your pay cycle"
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <CheckCircle color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="If you have a large sum of money" 
+                secondary="Consider a lump sum payment or setting up an offset account"
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <CheckCircle color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="If interest rates have dropped" 
+                secondary="Refinance to a lower rate, then implement extra payment strategies"
+              />
+            </ListItem>
+          </List>
+        </CardContent>
+      </Card>
+    </Box>
+  );
+};
+
+export default PayoffStrategies; 

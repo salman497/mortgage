@@ -1,46 +1,158 @@
-# Getting Started with Create React App
+# Mortgage: How Banks Fool Us
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A comprehensive React TypeScript application that helps users understand mortgage calculations, interest rates, and strategies to save money on their home loans.
 
-## Available Scripts
+## 🏠 Features
 
-In the project directory, you can run:
+### 1. Interactive Mortgage Calculator
+- Real-time calculation of monthly payments
+- Breakdown of principal vs interest
+- LMI (Lender's Mortgage Insurance) calculation
+- Stamp duty estimation (Australian states)
+- Visual representation of payment breakdown
 
-### `npm start`
+### 2. Interest Analysis & Visualization
+- Interactive charts showing loan balance over time
+- Cumulative interest vs principal payments
+- Impact of extra payments visualization
+- Pie charts showing total interest vs principal
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 3. Payoff Strategies
+- Comparison of different payment strategies
+- Weekly payment benefits
+- Extra payment impact analysis
+- Strategy recommendations based on financial situation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 4. Property Investment Tools
+- Negative gearing calculator
+- Property investment analysis
+- Using equity for multiple properties
+- Cash flow and tax benefit calculations
 
-### `npm test`
+### 5. Educational Content
+- Comprehensive explanation of LMI
+- Stamp duty information by state
+- Mortgage fundamentals
+- Financial glossary
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🚀 Technology Stack
 
-### `npm run build`
+- **Frontend**: React 18 with TypeScript
+- **UI Framework**: Material-UI (MUI) v5
+- **Charts**: Recharts
+- **Styling**: Material Design with responsive layout
+- **Build Tool**: Create React App
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📊 Key Calculations
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Monthly Payment Formula
+```
+M = P [r(1+r)^n] / [(1+r)^n - 1]
+```
+Where:
+- M = Monthly payment
+- P = Principal loan amount
+- r = Monthly interest rate
+- n = Number of payments
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### LMI Calculation
+- 80% LVR or below: No LMI
+- 85% LVR: 0.5-1.0% of loan amount
+- 90% LVR: 1.0-2.0% of loan amount
+- 95% LVR: 2.0-4.0% of loan amount
 
-### `npm run eject`
+### Stamp Duty
+Calculated based on Australian state rates with progressive scales.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 🎯 Educational Goals
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+This application aims to:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. **Demystify mortgage calculations** - Show users exactly how their payments are calculated
+2. **Reveal hidden costs** - Expose LMI and stamp duty impacts
+3. **Demonstrate saving strategies** - Show how small changes can save thousands
+4. **Provide investment insights** - Explain negative gearing and equity usage
+5. **Empower financial decisions** - Give users knowledge to negotiate better deals
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 🔧 Installation & Setup
 
-## Learn More
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd mortgage-calculator
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. Install dependencies:
+```bash
+npm install
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Start the development server:
+```bash
+npm start
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+## 📱 Mobile Responsive
+
+The application is fully responsive and optimized for:
+- Desktop computers
+- Tablets
+- Mobile phones
+
+## 🎨 Design Philosophy
+
+- **Clean & Simple**: Google-like simplicity with Material Design
+- **Information-Rich**: Comprehensive data without overwhelming users
+- **Visual Learning**: Charts and diagrams to explain complex concepts
+- **Interactive**: Real-time calculations and adjustable parameters
+
+## 🧮 Use Cases
+
+### For Home Buyers
+- Calculate exact monthly payments
+- Understand total interest costs
+- Plan extra payment strategies
+- Estimate LMI and stamp duty costs
+
+### For Property Investors
+- Analyze negative gearing scenarios
+- Calculate property investment returns
+- Plan multi-property portfolios
+- Understand tax implications
+
+### For Financial Education
+- Learn mortgage terminology
+- Understand amortization schedules
+- Compare different loan strategies
+- Make informed financial decisions
+
+## 🚨 Important Disclaimers
+
+- This calculator provides estimates only
+- Always consult qualified financial advisors
+- Interest rates and fees vary between lenders
+- Property investment involves significant risks
+- Tax advice should be sought from qualified professionals
+
+## 🔮 Future Enhancements
+
+- Historical interest rate analysis
+- Refinancing calculator
+- Property market data integration
+- Advanced investment scenarios
+- Export calculations to PDF
+- Save and compare multiple scenarios
+
+## 📧 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+**Disclaimer**: This application is for educational purposes only. Always seek professional financial advice before making investment decisions.
