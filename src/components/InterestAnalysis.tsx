@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -26,15 +26,19 @@ import {
 import { MortgageInputs } from '../types';
 import { generateChartData, formatCurrency } from '../utils/mortgageCalculations';
 
-const InterestAnalysis: React.FC = () => {
-  const [inputs, setInputs] = useState<MortgageInputs>({
-    loanAmount: 500000,
-    interestRate: 6.5,
-    loanTermYears: 30,
-  });
+interface InterestAnalysisProps {
+  inputs: MortgageInputs;
+  onInputChange: (updates: Partial<MortgageInputs>) => void;
+  extraPayment: number;
+  onExtraPaymentChange: (value: number) => void;
+}
 
-  const [extraPayment, setExtraPayment] = useState(0);
-
+const InterestAnalysis: React.FC<InterestAnalysisProps> = ({ 
+  inputs, 
+  onInputChange, 
+  extraPayment, 
+  onExtraPaymentChange 
+}) => {
   const chartData = useMemo(() => {
     const baseData = generateChartData(inputs);
     const extraData = extraPayment > 0 ? generateChartData(inputs, extraPayment) : null;
@@ -80,7 +84,7 @@ const InterestAnalysis: React.FC = () => {
                 </Typography>
                 <Slider
                   value={inputs.loanAmount}
-                  onChange={(_, value) => setInputs(prev => ({ ...prev, loanAmount: value as number }))}
+                  onChange={(_, value) => onInputChange({ loanAmount: value as number })}
                   min={100000}
                   max={2000000}
                   step={25000}
@@ -95,7 +99,7 @@ const InterestAnalysis: React.FC = () => {
                 </Typography>
                 <Slider
                   value={inputs.interestRate}
-                  onChange={(_, value) => setInputs(prev => ({ ...prev, interestRate: value as number }))}
+                  onChange={(_, value) => onInputChange({ interestRate: value as number })}
                   min={1}
                   max={12}
                   step={0.1}
@@ -110,7 +114,7 @@ const InterestAnalysis: React.FC = () => {
                 </Typography>
                 <Slider
                   value={extraPayment}
-                  onChange={(_, value) => setExtraPayment(value as number)}
+                  onChange={(_, value) => onExtraPaymentChange(value as number)}
                   min={0}
                   max={2000}
                   step={50}

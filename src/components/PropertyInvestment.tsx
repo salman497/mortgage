@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -20,28 +20,21 @@ import { AccountBalance, ExpandMore, Home, Calculate, Warning } from '@mui/icons
 import { PropertyInvestmentInputs } from '../types';
 import { calculateNegativeGearing, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
 
-const PropertyInvestment: React.FC = () => {
-  // Removed unused tabValue state
-  
-  const [investmentInputs, setInvestmentInputs] = useState<PropertyInvestmentInputs>({
-    propertyPrice: 600000,
-    deposit: 120000,
-    rentalIncome: 450,
-    expenses: 200,
-    interestRate: 6.5,
-    loanTermYears: 30,
-    taxRate: 37,
-  });
+interface PropertyInvestmentProps {
+  inputs: PropertyInvestmentInputs;
+  onInputChange: (updates: Partial<PropertyInvestmentInputs>) => void;
+}
 
+const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInputChange }) => {
   const investmentAnalysis = useMemo(() => {
-    return calculateNegativeGearing(investmentInputs);
-  }, [investmentInputs]);
+    return calculateNegativeGearing(inputs);
+  }, [inputs]);
 
   const handleInvestmentInputChange = (field: keyof PropertyInvestmentInputs) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = parseFloat(event.target.value) || 0;
-    setInvestmentInputs(prev => ({ ...prev, [field]: value }));
+    onInputChange({ [field]: value });
   };
 
   return (
@@ -73,7 +66,7 @@ const PropertyInvestment: React.FC = () => {
                   fullWidth
                   label="Property Price"
                   type="number"
-                  value={investmentInputs.propertyPrice}
+                  value={inputs.propertyPrice}
                   onChange={handleInvestmentInputChange('propertyPrice')}
                   InputProps={{ startAdornment: '$' }}
                 />
@@ -84,7 +77,7 @@ const PropertyInvestment: React.FC = () => {
                   fullWidth
                   label="Deposit"
                   type="number"
-                  value={investmentInputs.deposit}
+                  value={inputs.deposit}
                   onChange={handleInvestmentInputChange('deposit')}
                   InputProps={{ startAdornment: '$' }}
                 />
@@ -95,7 +88,7 @@ const PropertyInvestment: React.FC = () => {
                   fullWidth
                   label="Weekly Rental Income"
                   type="number"
-                  value={investmentInputs.rentalIncome}
+                  value={inputs.rentalIncome}
                   onChange={handleInvestmentInputChange('rentalIncome')}
                   InputProps={{ startAdornment: '$' }}
                 />
@@ -106,7 +99,7 @@ const PropertyInvestment: React.FC = () => {
                   fullWidth
                   label="Weekly Expenses"
                   type="number"
-                  value={investmentInputs.expenses}
+                  value={inputs.expenses}
                   onChange={handleInvestmentInputChange('expenses')}
                   InputProps={{ startAdornment: '$' }}
                 />
@@ -117,7 +110,7 @@ const PropertyInvestment: React.FC = () => {
                   fullWidth
                   label="Interest Rate (%)"
                   type="number"
-                  value={investmentInputs.interestRate}
+                  value={inputs.interestRate}
                   onChange={handleInvestmentInputChange('interestRate')}
                   inputProps={{ step: 0.1 }}
                 />
@@ -128,7 +121,7 @@ const PropertyInvestment: React.FC = () => {
                   fullWidth
                   label="Your Tax Rate (%)"
                   type="number"
-                  value={investmentInputs.taxRate}
+                  value={inputs.taxRate}
                   onChange={handleInvestmentInputChange('taxRate')}
                 />
               </Box>

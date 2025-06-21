@@ -21,6 +21,7 @@ import InterestAnalysis from './components/InterestAnalysis';
 import PayoffStrategies from './components/PayoffStrategies';
 import PropertyInvestment from './components/PropertyInvestment';
 import EducationalContent from './components/EducationalContent';
+import { MortgageInputs, PropertyInvestmentInputs } from './types';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -76,6 +77,62 @@ const theme = createTheme({
 function App() {
   const [tabValue, setTabValue] = useState(0);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Shared mortgage inputs state
+  const [mortgageInputs, setMortgageInputs] = useState<MortgageInputs>({
+    loanAmount: 500000,
+    interestRate: 6.5,
+    loanTermYears: 30,
+    propertyValue: 625000,
+    offsetBalance: 0,
+  });
+
+  // Property investment inputs state (shares interestRate with mortgage inputs)
+  const [propertyInputs, setPropertyInputs] = useState<PropertyInvestmentInputs>({
+    propertyPrice: 600000,
+    deposit: 120000,
+    rentalIncome: 450,
+    expenses: 200,
+    interestRate: 6.5, // This will be synced with mortgageInputs.interestRate
+    loanTermYears: 30,
+    taxRate: 37,
+  });
+
+  // Additional state for Interest Analysis
+  const [extraPayment, setExtraPayment] = useState(0);
+
+  // Sync interest rate between mortgage and property inputs
+  const handleMortgageInputChange = (updates: Partial<MortgageInputs>) => {
+    setMortgageInputs(prev => {
+      const newInputs = { ...prev, ...updates };
+      
+      // Sync interest rate to property inputs if it changed
+      if ('interestRate' in updates) {
+        setPropertyInputs(prevProperty => ({
+          ...prevProperty,
+          interestRate: newInputs.interestRate
+        }));
+      }
+      
+      return newInputs;
+    });
+  };
+
+  const handlePropertyInputChange = (updates: Partial<PropertyInvestmentInputs>) => {
+    setPropertyInputs(prev => {
+      const newInputs = { ...prev, ...updates };
+      
+      // Sync interest rate to mortgage inputs if it changed
+      if ('interestRate' in updates) {
+        setMortgageInputs(prevMortgage => ({
+          ...prevMortgage,
+          interestRate: newInputs.interestRate
+        }));
+      }
+      
+      return newInputs;
+    });
+  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -144,16 +201,30 @@ function App() {
           </Tabs>
 
           <TabPanel value={tabValue} index={0}>
-            <MortgageCalculator />
+            <MortgageCalculator 
+              inputs={mortgageInputs}
+              onInputChange={handleMortgageInputChange}
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <InterestAnalysis />
+            <InterestAnalysis 
+              inputs={mortgageInputs}
+              onInputChange={handleMortgageInputChange}
+              extraPayment={extraPayment}
+              onExtraPaymentChange={setExtraPayment}
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
-            <PayoffStrategies />
+            <PayoffStrategies 
+              inputs={mortgageInputs}
+              onInputChange={handleMortgageInputChange}
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={3}>
-            <PropertyInvestment />
+            <PropertyInvestment 
+              inputs={propertyInputs}
+              onInputChange={handlePropertyInputChange}
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={4}>
             <EducationalContent />

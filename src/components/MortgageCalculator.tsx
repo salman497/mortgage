@@ -15,15 +15,12 @@ import { Info, Calculate } from '@mui/icons-material';
 import { MortgageInputs, MortgageCalculation } from '../types';
 import { calculateMortgageDetails, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
 
-const MortgageCalculator: React.FC = () => {
-  const [inputs, setInputs] = useState<MortgageInputs>({
-    loanAmount: 500000,
-    interestRate: 6.5,
-    loanTermYears: 30,
-    propertyValue: 625000,
-    offsetBalance: 0,
-  });
+interface MortgageCalculatorProps {
+  inputs: MortgageInputs;
+  onInputChange: (updates: Partial<MortgageInputs>) => void;
+}
 
+const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInputChange }) => {
   const [results, setResults] = useState<MortgageCalculation | null>(null);
 
   useEffect(() => {
@@ -37,7 +34,7 @@ const MortgageCalculator: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = parseFloat(event.target.value) || 0;
-    setInputs(prev => ({ ...prev, [field]: value }));
+    onInputChange({ [field]: value });
   };
 
   const loanToValueRatio = inputs.propertyValue 

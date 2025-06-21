@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -25,13 +25,12 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { MortgageInputs } from '../types';
 import { comparePayoffStrategies, formatCurrency } from '../utils/mortgageCalculations';
 
-const PayoffStrategies: React.FC = () => {
-  const [inputs] = useState<MortgageInputs>({
-    loanAmount: 500000,
-    interestRate: 6.5,
-    loanTermYears: 30,
-  });
+interface PayoffStrategiesProps {
+  inputs: MortgageInputs;
+  onInputChange: (updates: Partial<MortgageInputs>) => void;
+}
 
+const PayoffStrategies: React.FC<PayoffStrategiesProps> = ({ inputs }) => {
   const scenarios = useMemo(() => {
     return comparePayoffStrategies(inputs);
   }, [inputs]);
