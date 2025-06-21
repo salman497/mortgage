@@ -14,6 +14,7 @@ import {
 import { Info, Calculate } from '@mui/icons-material';
 import { MortgageInputs, MortgageCalculation } from '../types';
 import { calculateMortgageDetails, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
+import NumberInputWithK from './NumberInputWithK';
 
 interface MortgageCalculatorProps {
   inputs: MortgageInputs;
@@ -30,7 +31,11 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
     }
   }, [inputs]);
 
-  const handleInputChange = (field: keyof MortgageInputs) => (
+  const handleInputChange = (field: keyof MortgageInputs) => (value: number) => {
+    onInputChange({ [field]: value });
+  };
+
+  const handleTextInputChange = (field: keyof MortgageInputs) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = parseFloat(event.target.value) || 0;
@@ -67,9 +72,8 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     </IconButton>
                   </Tooltip>
                 </Box>
-                <TextField
+                <NumberInputWithK
                   fullWidth
-                  type="number"
                   value={inputs.loanAmount}
                   onChange={handleInputChange('loanAmount')}
                   InputProps={{
@@ -89,10 +93,9 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     </IconButton>
                   </Tooltip>
                 </Box>
-                <TextField
+                <NumberInputWithK
                   fullWidth
-                  type="number"
-                  value={inputs.propertyValue}
+                  value={inputs.propertyValue || 0}
                   onChange={handleInputChange('propertyValue')}
                   InputProps={{
                     startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
@@ -115,7 +118,7 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                   fullWidth
                   type="number"
                   value={inputs.interestRate}
-                  onChange={handleInputChange('interestRate')}
+                  onChange={handleTextInputChange('interestRate')}
                   inputProps={{ step: 0.1 }}
                   InputProps={{
                     endAdornment: <Typography sx={{ ml: 1 }}>%</Typography>,
@@ -138,7 +141,7 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                   fullWidth
                   type="number"
                   value={inputs.loanTermYears}
-                  onChange={handleInputChange('loanTermYears')}
+                  onChange={handleTextInputChange('loanTermYears')}
                   InputProps={{
                     endAdornment: <Typography sx={{ ml: 1 }}>years</Typography>,
                   }}
@@ -156,9 +159,8 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     </IconButton>
                   </Tooltip>
                 </Box>
-                <TextField
+                <NumberInputWithK
                   fullWidth
-                  type="number"
                   value={inputs.offsetBalance || 0}
                   onChange={handleInputChange('offsetBalance')}
                   InputProps={{

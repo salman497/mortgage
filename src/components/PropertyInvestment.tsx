@@ -19,6 +19,7 @@ import {
 import { AccountBalance, ExpandMore, Home, Calculate, Warning } from '@mui/icons-material';
 import { PropertyInvestmentInputs } from '../types';
 import { calculateNegativeGearing, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
+import NumberInputWithK from './NumberInputWithK';
 
 interface PropertyInvestmentProps {
   inputs: PropertyInvestmentInputs;
@@ -30,7 +31,11 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
     return calculateNegativeGearing(inputs);
   }, [inputs]);
 
-  const handleInvestmentInputChange = (field: keyof PropertyInvestmentInputs) => (
+  const handleInvestmentInputChange = (field: keyof PropertyInvestmentInputs) => (value: number) => {
+    onInputChange({ [field]: value });
+  };
+
+  const handleTextInputChange = (field: keyof PropertyInvestmentInputs) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = parseFloat(event.target.value) || 0;
@@ -62,10 +67,9 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Typography>
               
               <Box sx={{ mb: 2 }}>
-                <TextField
+                <NumberInputWithK
                   fullWidth
                   label="Property Price"
-                  type="number"
                   value={inputs.propertyPrice}
                   onChange={handleInvestmentInputChange('propertyPrice')}
                   InputProps={{ startAdornment: '$' }}
@@ -73,10 +77,9 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <TextField
+                <NumberInputWithK
                   fullWidth
                   label="Deposit"
-                  type="number"
                   value={inputs.deposit}
                   onChange={handleInvestmentInputChange('deposit')}
                   InputProps={{ startAdornment: '$' }}
@@ -89,7 +92,7 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
                   label="Weekly Rental Income"
                   type="number"
                   value={inputs.rentalIncome}
-                  onChange={handleInvestmentInputChange('rentalIncome')}
+                  onChange={handleTextInputChange('rentalIncome')}
                   InputProps={{ startAdornment: '$' }}
                 />
               </Box>
@@ -100,7 +103,7 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
                   label="Weekly Expenses"
                   type="number"
                   value={inputs.expenses}
-                  onChange={handleInvestmentInputChange('expenses')}
+                  onChange={handleTextInputChange('expenses')}
                   InputProps={{ startAdornment: '$' }}
                 />
               </Box>
@@ -111,7 +114,7 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
                   label="Interest Rate (%)"
                   type="number"
                   value={inputs.interestRate}
-                  onChange={handleInvestmentInputChange('interestRate')}
+                  onChange={handleTextInputChange('interestRate')}
                   inputProps={{ step: 0.1 }}
                 />
               </Box>
@@ -122,7 +125,7 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
                   label="Your Tax Rate (%)"
                   type="number"
                   value={inputs.taxRate}
-                  onChange={handleInvestmentInputChange('taxRate')}
+                  onChange={handleTextInputChange('taxRate')}
                 />
               </Box>
             </CardContent>
