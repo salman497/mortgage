@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ThemeProvider,
   createTheme,
@@ -12,8 +12,14 @@ import {
   Tabs,
   Tab,
   useMediaQuery,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
-import { Calculate, Home, TrendingUp, School, AccountBalance } from '@mui/icons-material';
+import { Calculate, Home, TrendingUp, School, AccountBalance, RestartAlt } from '@mui/icons-material';
 
 // Import components
 import MortgageCalculator from './components/MortgageCalculator';
@@ -74,32 +80,88 @@ const theme = createTheme({
   },
 });
 
+// Default values
+const DEFAULT_MORTGAGE_INPUTS: MortgageInputs = {
+  loanAmount: 500000,
+  interestRate: 6.5,
+  loanTermYears: 30,
+  propertyValue: 625000,
+  offsetBalance: 0,
+};
+
+const DEFAULT_PROPERTY_INPUTS: PropertyInvestmentInputs = {
+  propertyPrice: 600000,
+  deposit: 120000,
+  rentalIncome: 450,
+  expenses: 200,
+  interestRate: 6.5,
+  loanTermYears: 30,
+  taxRate: 37,
+};
+
+const DEFAULT_EXTRA_PAYMENT = 0;
+
+// LocalStorage keys
+const STORAGE_KEYS = {
+  MORTGAGE_INPUTS: 'mortgageCalculator_mortgageInputs',
+  PROPERTY_INPUTS: 'mortgageCalculator_propertyInputs',
+  EXTRA_PAYMENT: 'mortgageCalculator_extraPayment',
+  TAB_VALUE: 'mortgageCalculator_tabValue',
+};
+
 function App() {
   const [tabValue, setTabValue] = useState(0);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
+  // Load initial values from localStorage or use defaults
+  const loadFromStorage = <T,>(key: string, defaultValue: T): T => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : defaultValue;
+    } catch (error) {
+      console.warn(`Failed to load ${key} from localStorage:`, error);
+      return defaultValue;
+    }
+  };
+
   // Shared mortgage inputs state
-  const [mortgageInputs, setMortgageInputs] = useState<MortgageInputs>({
-    loanAmount: 500000,
-    interestRate: 6.5,
-    loanTermYears: 30,
-    propertyValue: 625000,
-    offsetBalance: 0,
-  });
+  const [mortgageInputs, setMortgageInputs] = useState<MortgageInputs>(() =>
+    loadFromStorage(STORAGE_KEYS.MORTGAGE_INPUTS, DEFAULT_MORTGAGE_INPUTS)
+  );
 
   // Property investment inputs state (shares interestRate with mortgage inputs)
-  const [propertyInputs, setPropertyInputs] = useState<PropertyInvestmentInputs>({
-    propertyPrice: 600000,
-    deposit: 120000,
-    rentalIncome: 450,
-    expenses: 200,
-    interestRate: 6.5, // This will be synced with mortgageInputs.interestRate
-    loanTermYears: 30,
-    taxRate: 37,
-  });
+  const [propertyInputs, setPropertyInputs] = useState<PropertyInvestmentInputs>(() =>
+    loadFromStorage(STORAGE_KEYS.PROPERTY_INPUTS, DEFAULT_PROPERTY_INPUTS)
+  );
 
   // Additional state for Interest Analysis
-  const [extraPayment, setExtraPayment] = useState(0);
+  const [extraPayment, setExtraPayment] = useState(() =>
+    loadFromStorage(STORAGE_KEYS.EXTRA_PAYMENT, DEFAULT_EXTRA_PAYMENT)
+  );
+
+  // Load saved tab value
+  useEffect(() => {
+    const savedTab = loadFromStorage(STORAGE_KEYS.TAB_VALUE, 0);
+    setTabValue(savedTab);
+  }, []);
+
+  // Save to localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.MORTGAGE_INPUTS, JSON.stringify(mortgageInputs));
+  }, [mortgageInputs]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.PROPERTY_INPUTS, JSON.stringify(propertyInputs));
+  }, [propertyInputs]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.EXTRA_PAYMENT, JSON.stringify(extraPayment));
+  }, [extraPayment]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.TAB_VALUE, JSON.stringify(tabValue));
+  }, [tabValue]);
 
   // Sync interest rate between mortgage and property inputs
   const handleMortgageInputChange = (updates: Partial<MortgageInputs>) => {
@@ -138,6 +200,20 @@ function App() {
     setTabValue(newValue);
   };
 
+  const handleReset = () => {
+    // Clear all localStorage
+    Object.values(STORAGE_KEYS).forEach(key => {
+      localStorage.removeItem(key);
+    });
+
+    // Reset all state to defaults
+    setMortgageInputs(DEFAULT_MORTGAGE_INPUTS);
+    setPropertyInputs(DEFAULT_PROPERTY_INPUTS);
+    setExtraPayment(DEFAULT_EXTRA_PAYMENT);
+    setTabValue(0);
+    setResetDialogOpen(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -147,6 +223,14 @@ function App() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Mortgage: How Banks Fool Us
           </Typography>
+          <Button
+            color="inherit"
+            startIcon={<RestartAlt />}
+            onClick={() => setResetDialogOpen(true)}
+            sx={{ ml: 2 }}
+          >
+            Reset All
+          </Button>
         </Toolbar>
       </AppBar>
 
@@ -231,6 +315,32 @@ function App() {
           </TabPanel>
         </Paper>
       </Container>
+
+      {/* Reset Confirmation Dialog */}
+      <Dialog
+        open={resetDialogOpen}
+        onClose={() => setResetDialogOpen(false)}
+        aria-labelledby="reset-dialog-title"
+        aria-describedby="reset-dialog-description"
+      >
+        <DialogTitle id="reset-dialog-title">
+          Reset All Data?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="reset-dialog-description">
+            This will clear all your entered values and reset everything back to the default settings. 
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleReset} color="error" variant="contained">
+            Reset All
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 }
