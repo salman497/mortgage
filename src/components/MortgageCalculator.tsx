@@ -171,7 +171,12 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                   <Alert severity="success" sx={{ mt: 1 }}>
                     <strong>Smart move!</strong> Your ${formatCurrency(inputs.offsetBalance).replace('$', '')} offset 
                     saves you ~${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12).replace('$', '')} 
-                    per month in interest!
+                    per month in interest! Over the life of your loan, you'll save{' '}
+                    <strong>${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 * inputs.loanTermYears).replace('$', '')}</strong>{' '}
+                    in total interest payments to the bank.
+                    <br /><br />
+                    <strong>Best part:</strong> This money stays accessible - you can spend it anytime you need it, 
+                    unlike extra loan repayments which are locked away!
                   </Alert>
                 )}
               </Box>
