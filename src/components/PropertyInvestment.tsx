@@ -6,8 +6,6 @@ import {
   CardContent,
   TextField,
   Alert,
-  Tabs,
-  Tab,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -18,12 +16,12 @@ import {
   Chip,
   Divider,
 } from '@mui/material';
-import { AccountBalance, ExpandMore, TrendingUp, Home, Calculate, Warning } from '@mui/icons-material';
-import { PropertyInvestmentInputs, InvestmentAnalysis } from '../types';
+import { AccountBalance, ExpandMore, Home, Calculate, Warning } from '@mui/icons-material';
+import { PropertyInvestmentInputs } from '../types';
 import { calculateNegativeGearing, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
 
 const PropertyInvestment: React.FC = () => {
-  const [tabValue, setTabValue] = useState(0);
+  // Removed unused tabValue state
   
   const [investmentInputs, setInvestmentInputs] = useState<PropertyInvestmentInputs>({
     propertyPrice: 600000,

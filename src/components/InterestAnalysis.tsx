@@ -4,7 +4,6 @@ import {
   Typography,
   Card,
   CardContent,
-  TextField,
   Slider,
   Alert,
 } from '@mui/material';
@@ -58,12 +57,7 @@ const InterestAnalysis: React.FC = () => {
     { name: 'Interest', value: finalData?.cumulativeInterest || 0, color: '#ff6b6b' },
   ];
 
-  const handleInputChange = (field: keyof MortgageInputs) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = parseFloat(event.target.value) || 0;
-    setInputs(prev => ({ ...prev, [field]: value }));
-  };
+  // Removed unused handleInputChange function
 
   return (
     <Box>

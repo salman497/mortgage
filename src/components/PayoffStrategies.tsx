@@ -21,12 +21,12 @@ import {
   ListItemText,
 } from '@mui/material';
 import { School, ExpandMore, CheckCircle, TrendingUp, Savings } from '@mui/icons-material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { MortgageInputs, ComparisonScenario } from '../types';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { MortgageInputs } from '../types';
 import { comparePayoffStrategies, formatCurrency } from '../utils/mortgageCalculations';
 
 const PayoffStrategies: React.FC = () => {
-  const [inputs, setInputs] = useState<MortgageInputs>({
+  const [inputs] = useState<MortgageInputs>({
     loanAmount: 500000,
     interestRate: 6.5,
     loanTermYears: 30,
