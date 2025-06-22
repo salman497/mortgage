@@ -306,12 +306,12 @@ export const formatCurrency = (amount: number): string => {
     currency: 'AUD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(amount) + ' ';
 };
 
 /**
  * Format percentage for display
  */
 export const formatPercentage = (value: number, decimals: number = 2): string => {
-  return `${value.toFixed(decimals)}%`;
+  return `${value.toFixed(decimals)}% `;
 }; 
