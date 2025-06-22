@@ -111,25 +111,36 @@ const PayoffStrategies: React.FC<PayoffStrategiesProps> = ({ inputs }) => {
               Strategy Comparison - Your Loan: {formatCurrency(inputs.loanAmount)} at {inputs.interestRate}%
             </Typography>
             <MermaidDiagramModal
-              title="Payoff Strategy Comparison"
-              description="This diagram shows how different payoff strategies can dramatically reduce your loan term and total interest paid."
+              title="Smart Payoff Strategies"
+              description="Compare different approaches to paying off your mortgage faster and see their relative benefits."
               mermaidCode={`
-flowchart TD
-    A["Standard Loan: ${formatCurrency(inputs.loanAmount)} at ${inputs.interestRate}%"] --> B[Payment Strategies]
-    B --> C[Minimum Payments]
-    B --> D[Weekly Payments]
-    B --> E[Extra Payments]
-    B --> F[Offset Account]
+graph TB
+    subgraph "🎯 Your Goal: Pay Less Interest"
+        Goal[Save Money & Time]
+    end
     
-    C --> G["${inputs.loanTermYears} years<br/>Total Interest: ${formatCurrency(scenarios.find(s => s.name === 'Minimum Payment')?.totalInterest || 0)}"]
+    subgraph "📊 Strategy Options"
+        A[🗓️ Minimum Payments<br/>${inputs.loanTermYears} years<br/>${formatCurrency(scenarios.find(s => s.name === 'Minimum Payment')?.totalInterest || 0)} interest]
+        B[📅 Weekly Payments<br/>${(scenarios.find(s => s.name === 'Weekly Payments')?.payoffTime || inputs.loanTermYears).toFixed(1)} years<br/>Save: ${formatCurrency(scenarios.find(s => s.name === 'Weekly Payments')?.totalSavings || 0)}]
+        C[💰 Extra Payments<br/>Flexible timeline<br/>Every $100 = $200-300 saved]
+        D[🏦 Offset Account<br/>Keep access to money<br/>Tax-free savings]
+    end
     
-    D --> H["~${(scenarios.find(s => s.name === 'Weekly Payments')?.payoffTime || inputs.loanTermYears).toFixed(1)} years<br/>Interest Saved: ${formatCurrency(scenarios.find(s => s.name === 'Weekly Payments')?.totalSavings || 0)}"]
+    subgraph "💡 Pro Tips"
+        E[Start Early = More Savings]
+        F[Combine Strategies]
+        G[Review Regularly]
+    end
     
-    E --> I["Flexible timeline<br/>Every $100 extra = $200-300 saved"]
+    Goal --> A
+    Goal --> B  
+    Goal --> C
+    Goal --> D
     
-    F --> J["Accessible savings<br/>Tax-free interest reduction"]
-    
-    K[Key Insight] --> L["Small changes = Big savings<br/>The earlier you start, the more you save"]
+    A -.->|Safest but slowest| E
+    B -.->|13th payment effect| E
+    C -.->|Most flexible| F
+    D -.->|Keep liquidity| F
               `}
             />
           </Box>

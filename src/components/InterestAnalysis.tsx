@@ -81,23 +81,27 @@ const InterestAnalysis: React.FC<InterestAnalysisProps> = ({
                   Loan Parameters
                 </Typography>
                 <MermaidDiagramModal
-                  title="Extra Payment Impact Analysis"
-                  description="This diagram shows how extra payments dramatically reduce your total interest and loan term by paying down the principal faster."
+                  title="Power of Extra Payments"
+                  description="This diagram shows the snowball effect of extra payments and how they accelerate your loan payoff."
                   mermaidCode={`
-flowchart TD
-    A["Base Monthly Payment: ${formatCurrency(Math.round((inputs.loanAmount * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1)))}"] --> B[Payment Split]
-    C["Extra Payment: ${formatCurrency(extraPayment)}"] --> D[Total Payment]
-    A --> D
-    D --> E["Total Monthly: ${formatCurrency(Math.round((inputs.loanAmount * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1)) + extraPayment)}"]
-    B --> F[Interest Portion]
-    B --> G[Principal Portion]
-    C --> H[Extra to Principal]
-    G --> I[Total Principal Payment]
-    H --> I
-    I --> J[Faster Loan Payoff]
-    J --> K[Reduced Total Interest]
-    L[Compound Effect] --> M["Each extra payment reduces<br/>future interest calculations"]
-    N[Time Savings] --> O["Months/Years saved<br/>on loan term"]
+sequenceDiagram
+    participant You
+    participant Bank
+    participant Principal as Loan Balance
+    
+    Note over You,Principal: Regular Payment Cycle
+    You->>Bank: Monthly Payment ${formatCurrency(Math.round((inputs.loanAmount * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1)))}
+    Bank->>Bank: Takes Interest First
+    Bank->>Principal: Reduces by remaining amount
+    
+    Note over You,Principal: With Extra Payment
+    You->>Bank: Extra Payment ${formatCurrency(extraPayment)}
+    Bank->>Principal: 100% goes to principal!
+    Principal->>Principal: Lower balance = less interest next month
+    
+    Note over You,Principal: The Snowball Effect
+    Principal->>You: Smaller balance means<br/>more of regular payment<br/>goes to principal
+    You->>You: Each month gets better!
                   `}
                 />
               </Box>
@@ -170,12 +174,13 @@ flowchart TD
                   Total Interest vs Principal
                 </Typography>
                 <MermaidDiagramModal
-                  title="Principal vs Interest Breakdown"
-                  description="This diagram shows the relationship between your loan principal and the total interest you'll pay over the life of the loan."
+                  title="Where Your Money Goes"
+                  description="This pie chart shows the total breakdown of what you'll pay - your original loan plus the interest cost."
                   mermaidCode={`
-pie title Loan Payment Breakdown
-    "Principal (What you borrowed)" : ${inputs.loanAmount}
-    "Interest (Bank's profit)" : ${Math.round(finalData?.cumulativeInterest || 0)}
+%%{init: {'pie': {'textPosition': 0.8}}}%%
+pie title "Total Cost: ${formatCurrency(inputs.loanAmount + Math.round(finalData?.cumulativeInterest || 0))}"
+    "Your Loan Amount" : ${inputs.loanAmount}
+    "Interest to Bank" : ${Math.round(finalData?.cumulativeInterest || 0)}
                   `}
                 />
               </Box>

@@ -187,25 +187,35 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     Monthly Payment Breakdown
                   </Typography>
                   <MermaidDiagramModal
-                    title="Monthly Payment Calculation"
-                    description="This diagram shows how your monthly mortgage payment is calculated using the amortization formula and how it's split between principal and interest."
+                    title="How Your Monthly Payment is Calculated"
+                    description="This diagram shows the step-by-step calculation process for determining your monthly mortgage payment."
                     mermaidCode={`
 flowchart TD
-    A["Loan Amount: ${formatCurrency(inputs.loanAmount)}"] --> B[Monthly Interest Rate]
-    C["Annual Rate: ${inputs.interestRate}%"] --> B
-    B --> D["Monthly Rate = ${inputs.interestRate}% ÷ 12 = ${(inputs.interestRate/12).toFixed(3)}%"]
-    E["Loan Term: ${inputs.loanTermYears} years"] --> F["Total Payments = ${inputs.loanTermYears} × 12 = ${(inputs.loanTermYears * 12)} months"]
-    A --> G[Amortization Formula]
-    D --> G
-    F --> G
-    G --> H["Monthly Payment = ${formatCurrency(results.monthlyPayment)}"]
-    H --> I[Payment Split]
-    I --> J["Principal: ${formatCurrency(results.monthlyPrincipal)}"]
-    I --> K["Interest: ${formatCurrency(results.monthlyInterest)}"]
-    L["Offset Balance: ${formatCurrency(inputs.offsetBalance || 0)}"] --> M[Effective Balance]
-    A --> M
-    M --> N["${formatCurrency(Math.max(0, inputs.loanAmount - (inputs.offsetBalance || 0)))}"]
-    N --> K
+    A[🏠 Loan Amount<br/>${formatCurrency(inputs.loanAmount)}] --> D[📊 Calculation Inputs]
+    B[📈 Interest Rate<br/>${inputs.interestRate}% per year] --> D
+    C[⏰ Loan Term<br/>${inputs.loanTermYears} years] --> D
+    
+    D --> E[🔢 Convert to Monthly]
+    E --> F[Monthly Rate = ${inputs.interestRate}% ÷ 12<br/>= ${(inputs.interestRate/12).toFixed(3)}%]
+    E --> G[Total Payments = ${inputs.loanTermYears} × 12<br/>= ${inputs.loanTermYears * 12} months]
+    
+    F --> H[🧮 Amortization Formula]
+    G --> H
+    A --> H
+    
+    H --> I[💰 Monthly Payment<br/>${formatCurrency(results.monthlyPayment)}]
+    
+    I --> J[📋 Payment Breakdown]
+    J --> K[🏛️ Interest Portion<br/>${formatCurrency(results.monthlyInterest)}<br/>Goes to bank]
+    J --> L[🏗️ Principal Portion<br/>${formatCurrency(results.monthlyPrincipal)}<br/>Reduces loan balance]
+    
+    ${inputs.offsetBalance && inputs.offsetBalance > 0 ? `
+    M[💳 Offset Balance<br/>${formatCurrency(inputs.offsetBalance)}] --> N[⚡ Reduces Interest<br/>Saves ${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}/month]
+    N -.->|Affects| K` : ''}
+    
+    style A fill:#e8f5e8
+    style I fill:#fff2e8
+    style H fill:#e8f0ff
                     `}
                   />
                 </Box>
@@ -387,22 +397,28 @@ flowchart TD
                     🎉 Offset Account Benefits
                   </Typography>
                   <MermaidDiagramModal
-                    title="Offset Account Benefits"
-                    description="This diagram shows how your offset account saves you money by reducing the effective loan balance that accrues interest."
+                    title="How Your Offset Account Works"
+                    description="This diagram shows how your offset account reduces interest and provides tax-free savings benefits."
                     mermaidCode={`
-flowchart TD
-    A["Original Loan: ${formatCurrency(inputs.loanAmount)}"] --> B[Offset Impact]
-    C["Offset Balance: ${formatCurrency(inputs.offsetBalance)}"] --> B
-    B --> D["Effective Loan Balance"]
-    D --> E["${formatCurrency(Math.max(0, inputs.loanAmount - inputs.offsetBalance))}"]
-    F["Interest Rate: ${inputs.interestRate}%"] --> G[Monthly Savings]
-    C --> G
-    G --> H["Monthly Interest Savings"]
-    H --> I["${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}"]
-    G --> J[Annual Savings]
-    J --> K["${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100)}"]
-    L[Effective Interest Rate] --> M["${formatPercentage(inputs.interestRate * (1 - inputs.offsetBalance / inputs.loanAmount))}"]
-    N[Tax Benefits] --> O["Tax-Free Savings<br/>(Unlike term deposits)"]
+flowchart LR
+    A[Your Offset Account<br/>${formatCurrency(inputs.offsetBalance)}] 
+    B[Your Loan<br/>${formatCurrency(inputs.loanAmount)}]
+    C[Interest Calculated On<br/>${formatCurrency(Math.max(0, inputs.loanAmount - inputs.offsetBalance))}]
+    D[💰 Monthly Savings<br/>${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}]
+    E[✅ Benefits]
+    
+    A -.->|Reduces| B
+    B --> C
+    C --> D
+    D --> E
+    
+    E --> F[🚫 No Tax on Savings]
+    E --> G[💸 Instant Access to Funds]
+    E --> H[📈 Effective Rate: ${formatPercentage(inputs.interestRate * (1 - inputs.offsetBalance / inputs.loanAmount))}%]
+    
+    style A fill:#e8f5e8
+    style D fill:#fff2e8
+    style E fill:#e8f0ff
                     `}
                   />
                 </Box>

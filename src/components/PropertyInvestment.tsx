@@ -178,30 +178,40 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
                   Investment Analysis
                 </Typography>
                 <MermaidDiagramModal
-                  title="Property Investment Cash Flow Analysis"
-                  description="This diagram shows how rental income, expenses, and tax benefits combine to determine your investment property's cash flow."
+                  title="Investment Property Cash Flow"
+                  description="This diagram shows how your rental income, expenses, and tax benefits work together to determine your investment returns."
                   mermaidCode={`
-flowchart TD
-    A["Property Price: ${formatCurrency(inputs.propertyPrice)}"] --> B[Loan Details]
-    C["Deposit: ${formatCurrency(inputs.deposit)}"] --> B
-    B --> D["Loan Amount: ${formatCurrency(inputs.propertyPrice - inputs.deposit)}"]
-    D --> E[Monthly Payments]
-    F["Interest Rate: ${inputs.interestRate}%"] --> E
-    E --> G["Monthly Payment: ${formatCurrency(((inputs.propertyPrice - inputs.deposit) * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1))}"]
+flowchart LR
+    subgraph "💰 Money In"
+        A[Rental Income<br/>${formatCurrency(inputs.rentalIncome * 52/12)}/month]
+    end
     
-    H["Weekly Rental: ${formatCurrency(inputs.rentalIncome)}"] --> I[Income]
-    I --> J["Monthly Rental: ${formatCurrency(inputs.rentalIncome * 52/12)}"]
+    subgraph "💸 Money Out"
+        B[Loan Payment<br/>${formatCurrency(((inputs.propertyPrice - inputs.deposit) * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1))}]
+        C[Property Expenses<br/>${formatCurrency(inputs.expenses * 52/12)}/month]
+    end
     
-    K["Weekly Expenses: ${formatCurrency(inputs.expenses)}"] --> L[Costs]
-    L --> M["Monthly Expenses: ${formatCurrency(inputs.expenses * 52/12)}"]
-    G --> N[Cash Flow]
-    J --> N
-    M --> N
-    N --> O["Monthly Cash Flow: ${formatCurrency(investmentAnalysis.cashFlow/12)}"]
+    subgraph "📊 Cash Flow"
+        D[Monthly Result<br/>${formatCurrency(investmentAnalysis.cashFlow/12)}]
+        E{Positive or Negative?}
+    end
     
-    P["Tax Rate: ${inputs.taxRate}%"] --> Q[Tax Benefits]
-    N --> Q
-    Q --> R["After-Tax Cash Flow"]
+    subgraph "🏛️ Tax Impact"
+        F[Tax Benefits<br/>Interest & Expenses<br/>are deductible]
+        G[Your Tax Rate<br/>${inputs.taxRate}%]
+    end
+    
+    A --> D
+    B --> D
+    C --> D
+    D --> E
+    E -->|Negative| F
+    F --> G
+    G --> H[Tax Refund<br/>Reduces your cost]
+    
+    style A fill:#e8f5e8
+    style D fill:#fff2e8
+    style F fill:#e8f0ff
                   `}
                 />
               </Box>
