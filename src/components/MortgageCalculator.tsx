@@ -5,16 +5,15 @@ import {
   Typography,
   Card,
   CardContent,
-  Tooltip,
-  IconButton,
   Alert,
   Divider,
   Chip,
 } from '@mui/material';
-import { Info, Calculate } from '@mui/icons-material';
+import { Calculate } from '@mui/icons-material';
 import { MortgageInputs, MortgageCalculation } from '../types';
 import { calculateMortgageDetails, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
 import NumberInputWithK from './NumberInputWithK';
+import TermWithInfo, { getExplanation } from './TermWithInfo';
 
 interface MortgageCalculatorProps {
   inputs: MortgageInputs;
@@ -62,16 +61,11 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
               </Typography>
               
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    How much did you borrow?
-                  </Typography>
-                  <Tooltip title="The total amount you borrowed from the bank">
-                    <IconButton size="small">
-                      <Info fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <TermWithInfo 
+                  term="Loan Amount - How much did you borrow?"
+                  explanation={getExplanation('Loan Amount')}
+                  gutterBottom
+                />
                 <NumberInputWithK
                   fullWidth
                   value={inputs.loanAmount}
@@ -83,16 +77,11 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Property Value
-                  </Typography>
-                  <Tooltip title="The current market value of your property">
-                    <IconButton size="small">
-                      <Info fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <TermWithInfo 
+                  term="Property Value"
+                  explanation={getExplanation('Property Value')}
+                  gutterBottom
+                />
                 <NumberInputWithK
                   fullWidth
                   value={inputs.propertyValue || 0}
@@ -104,16 +93,11 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Interest Rate (% per year)
-                  </Typography>
-                  <Tooltip title="The annual interest rate charged by your lender">
-                    <IconButton size="small">
-                      <Info fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <TermWithInfo 
+                  term="Interest Rate (% per year)"
+                  explanation={getExplanation('Interest Rate')}
+                  gutterBottom
+                />
                 <TextField
                   fullWidth
                   type="number"
@@ -127,16 +111,11 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Loan Term (years)
-                  </Typography>
-                  <Tooltip title="How long you have to pay back the loan">
-                    <IconButton size="small">
-                      <Info fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <TermWithInfo 
+                  term="Loan Term (years)"
+                  explanation={getExplanation('Loan Term')}
+                  gutterBottom
+                />
                 <TextField
                   fullWidth
                   type="number"
@@ -149,16 +128,11 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Offset Account Balance
-                  </Typography>
-                  <Tooltip title="Money in your offset account reduces interest daily - every dollar counts!">
-                    <IconButton size="small">
-                      <Info fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <TermWithInfo 
+                  term="Offset Account Balance"
+                  explanation={getExplanation('Offset Account')}
+                  gutterBottom
+                />
                 <NumberInputWithK
                   fullWidth
                   value={inputs.offsetBalance || 0}
@@ -183,8 +157,20 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
 
               {loanToValueRatio > 80 && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
-                  Your LVR is {formatPercentage(loanToValueRatio)}. 
-                  You'll need to pay Lender's Mortgage Insurance (LMI).
+                  <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                    <span>Your</span>
+                    <TermWithInfo 
+                      term="LVR"
+                      explanation={getExplanation('LVR')}
+                      variant="body2"
+                    />
+                    <span>is {formatPercentage(loanToValueRatio)}. You'll need to pay</span>
+                    <TermWithInfo 
+                      term="LMI"
+                      explanation={getExplanation('LMI')}
+                      variant="body2"
+                    />
+                  </Box>
                 </Alert>
               )}
             </CardContent>
@@ -212,17 +198,27 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Principal
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <TermWithInfo 
+                        term="Principal"
+                        explanation={getExplanation('Principal')}
+                        variant="body2"
+                        color="text.secondary"
+                      />
+                    </Box>
                     <Typography variant="h6">
                       {formatCurrency(results.monthlyPrincipal)}
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Interest
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <TermWithInfo 
+                        term="Interest"
+                        explanation={getExplanation('Interest')}
+                        variant="body2"
+                        color="text.secondary"
+                      />
+                    </Box>
                     <Typography variant="h6" color="error">
                       {formatCurrency(results.monthlyInterest)}
                     </Typography>
@@ -258,9 +254,13 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
 
                 {results.lmiAmount && results.lmiAmount > 0 && (
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Lender's Mortgage Insurance (LMI)
-                    </Typography>
+                    <TermWithInfo 
+                      term="Lender's Mortgage Insurance (LMI)"
+                      explanation={getExplanation('LMI')}
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                    />
                     <Typography variant="h6" color="warning.main">
                       {formatCurrency(results.lmiAmount)}
                     </Typography>
@@ -269,9 +269,13 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
 
                 {results.stampDuty && results.stampDuty > 0 && (
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Stamp Duty (NSW estimate)
-                    </Typography>
+                    <TermWithInfo 
+                      term="Stamp Duty (NSW estimate)"
+                      explanation={getExplanation('Stamp Duty')}
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                    />
                     <Typography variant="h6">
                       {formatCurrency(results.stampDuty)}
                     </Typography>

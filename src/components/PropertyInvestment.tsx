@@ -20,6 +20,7 @@ import { AccountBalance, ExpandMore, Home, Calculate, Warning } from '@mui/icons
 import { PropertyInvestmentInputs } from '../types';
 import { calculateNegativeGearing, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
 import NumberInputWithK from './NumberInputWithK';
+import TermWithInfo, { getExplanation } from './TermWithInfo';
 
 interface PropertyInvestmentProps {
   inputs: PropertyInvestmentInputs;
@@ -67,9 +68,15 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Typography>
               
               <Box sx={{ mb: 2 }}>
+                <TermWithInfo 
+                  term="Property Price"
+                  explanation={getExplanation('Property Value')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <NumberInputWithK
                   fullWidth
-                  label="Property Price"
                   value={inputs.propertyPrice}
                   onChange={handleInvestmentInputChange('propertyPrice')}
                   InputProps={{ startAdornment: '$' }}
@@ -77,9 +84,15 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 2 }}>
+                <TermWithInfo 
+                  term="Deposit"
+                  explanation={getExplanation('Deposit')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <NumberInputWithK
                   fullWidth
-                  label="Deposit"
                   value={inputs.deposit}
                   onChange={handleInvestmentInputChange('deposit')}
                   InputProps={{ startAdornment: '$' }}
@@ -87,9 +100,15 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 2 }}>
+                <TermWithInfo 
+                  term="Weekly Rental Income"
+                  explanation={getExplanation('Rental Income')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <TextField
                   fullWidth
-                  label="Weekly Rental Income"
                   type="number"
                   value={inputs.rentalIncome}
                   onChange={handleTextInputChange('rentalIncome')}
@@ -98,9 +117,15 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 2 }}>
+                <TermWithInfo 
+                  term="Weekly Expenses"
+                  explanation={getExplanation('Expenses')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <TextField
                   fullWidth
-                  label="Weekly Expenses"
                   type="number"
                   value={inputs.expenses}
                   onChange={handleTextInputChange('expenses')}
@@ -109,9 +134,15 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 2 }}>
+                <TermWithInfo 
+                  term="Interest Rate (%)"
+                  explanation={getExplanation('Interest Rate')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <TextField
                   fullWidth
-                  label="Interest Rate (%)"
                   type="number"
                   value={inputs.interestRate}
                   onChange={handleTextInputChange('interestRate')}
@@ -120,9 +151,15 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Box>
 
               <Box sx={{ mb: 2 }}>
+                <TermWithInfo 
+                  term="Your Tax Rate (%)"
+                  explanation={getExplanation('Tax Rate')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <TextField
                   fullWidth
-                  label="Your Tax Rate (%)"
                   type="number"
                   value={inputs.taxRate}
                   onChange={handleTextInputChange('taxRate')}
@@ -140,9 +177,13 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
               </Typography>
               
               <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Weekly Cash Flow
-                </Typography>
+                <TermWithInfo 
+                  term="Weekly Cash Flow"
+                  explanation={getExplanation('Cash Flow')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <Typography 
                   variant="h4" 
                   color={investmentAnalysis.cashFlow >= 0 ? 'success.main' : 'error.main'}
@@ -150,27 +191,42 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
                 >
                   {formatCurrency(investmentAnalysis.cashFlow / 52)}
                 </Typography>
-                <Chip 
-                  label={investmentAnalysis.cashFlow >= 0 ? 'Positive Gearing' : 'Negative Gearing'}
-                  color={investmentAnalysis.cashFlow >= 0 ? 'success' : 'warning'}
-                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  <Chip 
+                    label={investmentAnalysis.cashFlow >= 0 ? 'Positive Gearing' : 'Negative Gearing'}
+                    color={investmentAnalysis.cashFlow >= 0 ? 'success' : 'warning'}
+                  />
+                  <TermWithInfo 
+                    term={investmentAnalysis.cashFlow >= 0 ? 'What is Positive Gearing?' : 'What is Negative Gearing?'}
+                    explanation={getExplanation(investmentAnalysis.cashFlow >= 0 ? 'Positive Gearing' : 'Negative Gearing')}
+                    variant="body2"
+                  />
+                </Box>
               </Box>
 
               <Divider sx={{ my: 2 }} />
 
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Annual Tax Benefit
-                </Typography>
+                <TermWithInfo 
+                  term="Annual Tax Benefit"
+                  explanation={getExplanation('Tax Deductions')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <Typography variant="h6" color="success.main">
                   {formatCurrency(investmentAnalysis.taxBenefit)}
                 </Typography>
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Expected Capital Growth (3% p.a.)
-                </Typography>
+                <TermWithInfo 
+                  term="Expected Capital Growth (3% p.a.)"
+                  explanation={getExplanation('Capital Growth')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <Typography variant="h6">
                   {formatCurrency(investmentAnalysis.capitalGrowth)}
                 </Typography>

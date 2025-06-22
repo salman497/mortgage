@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import { MortgageInputs } from '../types';
 import { generateChartData, formatCurrency } from '../utils/mortgageCalculations';
+import TermWithInfo, { getExplanation } from './TermWithInfo';
 
 interface InterestAnalysisProps {
   inputs: MortgageInputs;
@@ -79,9 +80,13 @@ const InterestAnalysis: React.FC<InterestAnalysisProps> = ({
               </Typography>
               
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Loan Amount: {formatCurrency(inputs.loanAmount)}
-                </Typography>
+                <TermWithInfo 
+                  term={`Loan Amount: ${formatCurrency(inputs.loanAmount)}`}
+                  explanation={getExplanation('Loan Amount')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <Slider
                   value={inputs.loanAmount}
                   onChange={(_, value) => onInputChange({ loanAmount: value as number })}
@@ -94,9 +99,13 @@ const InterestAnalysis: React.FC<InterestAnalysisProps> = ({
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Interest Rate: {inputs.interestRate}%
-                </Typography>
+                <TermWithInfo 
+                  term={`Interest Rate: ${inputs.interestRate}%`}
+                  explanation={getExplanation('Interest Rate')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <Slider
                   value={inputs.interestRate}
                   onChange={(_, value) => onInputChange({ interestRate: value as number })}
@@ -109,9 +118,13 @@ const InterestAnalysis: React.FC<InterestAnalysisProps> = ({
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Extra Monthly Payment: {formatCurrency(extraPayment)}
-                </Typography>
+                <TermWithInfo 
+                  term={`Extra Monthly Payment: ${formatCurrency(extraPayment)}`}
+                  explanation={getExplanation('Extra Payment')}
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                />
                 <Slider
                   value={extraPayment}
                   onChange={(_, value) => onExtraPaymentChange(value as number)}

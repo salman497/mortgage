@@ -24,6 +24,7 @@ import { School, ExpandMore, CheckCircle, TrendingUp, Savings } from '@mui/icons
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { MortgageInputs } from '../types';
 import { comparePayoffStrategies, formatCurrency } from '../utils/mortgageCalculations';
+import TermWithInfo, { getExplanation } from './TermWithInfo';
 
 interface PayoffStrategiesProps {
   inputs: MortgageInputs;
@@ -112,11 +113,41 @@ const PayoffStrategies: React.FC<PayoffStrategiesProps> = ({ inputs }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Strategy</TableCell>
-                  <TableCell align="right">Monthly Payment</TableCell>
-                  <TableCell align="right">Total Interest</TableCell>
-                  <TableCell align="right">Payoff Time</TableCell>
-                  <TableCell align="right">Interest Savings</TableCell>
+                  <TableCell>
+                    <TermWithInfo 
+                      term="Strategy"
+                      explanation={getExplanation('Payoff Strategies')}
+                      variant="body2"
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <TermWithInfo 
+                      term="Monthly Payment"
+                      explanation={getExplanation('Monthly Payment')}
+                      variant="body2"
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <TermWithInfo 
+                      term="Total Interest"
+                      explanation={getExplanation('Interest')}
+                      variant="body2"
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <TermWithInfo 
+                      term="Payoff Time"
+                      explanation={getExplanation('Loan Term')}
+                      variant="body2"
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <TermWithInfo 
+                      term="Interest Savings"
+                      explanation="How much less interest you'll pay compared to just making minimum payments. More savings = more money in your pocket!"
+                      variant="body2"
+                    />
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
