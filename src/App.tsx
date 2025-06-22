@@ -27,6 +27,7 @@ import InterestAnalysis from './components/InterestAnalysis';
 import PayoffStrategies from './components/PayoffStrategies';
 import PropertyInvestment from './components/PropertyInvestment';
 import EducationalContent from './components/EducationalContent';
+import PayPalDonate from './components/PayPalDonate';
 import { MortgageInputs, PropertyInvestmentInputs } from './types';
 
 interface TabPanelProps {
@@ -223,6 +224,7 @@ function App() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Understand Your Mortgage - Don't Let Banks Fool You
           </Typography>
+          <PayPalDonate />
           <Button
             color="inherit"
             startIcon={<RestartAlt />}
