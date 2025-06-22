@@ -102,7 +102,7 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                 <TextField
                   fullWidth
                   type="number"
-                  value={inputs.interestRate}
+                  value={inputs.interestRate || ''}
                   onChange={handleTextInputChange('interestRate')}
                   inputProps={{ step: 0.1 }}
                   InputProps={{
@@ -120,7 +120,7 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                 <TextField
                   fullWidth
                   type="number"
-                  value={inputs.loanTermYears}
+                  value={inputs.loanTermYears || ''}
                   onChange={handleTextInputChange('loanTermYears')}
                   InputProps={{
                     endAdornment: <Typography sx={{ ml: 1 }}>years</Typography>,
@@ -142,7 +142,7 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
                   }}
                 />
-                {inputs.offsetBalance && inputs.offsetBalance > 0 && (
+                {inputs.offsetBalance && inputs.offsetBalance > 0 ? (
                   <Alert severity="success" sx={{ mt: 1 }}>
                     <strong>Smart move!</strong> Your ${formatCurrency(inputs.offsetBalance).replace('$', '')} offset 
                     saves you ~${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12).replace('$', '')} 
@@ -153,10 +153,12 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     <strong>Best part:</strong> This money stays accessible - you can spend it anytime you need it, 
                     unlike extra loan repayments which are locked away!
                   </Alert>
+                ) : (
+                  <Box />
                 )}
               </Box>
 
-              {loanToValueRatio > 80 && (
+              {loanToValueRatio > 80 ? (
                 <Alert severity="warning" sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                     <span>Your</span>
@@ -173,6 +175,8 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     />
                   </Box>
                 </Alert>
+              ) : (
+                <Box />
               )}
             </CardContent>
           </Card>
@@ -308,7 +312,7 @@ flowchart TD
                   </Typography>
                 </Box>
 
-                {results.lmiAmount && results.lmiAmount > 0 && (
+                {results.lmiAmount && results.lmiAmount > 0 ? (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                       <TermWithInfo 
@@ -346,9 +350,11 @@ flowchart TD
                       {formatCurrency(results.lmiAmount)}
                     </Typography>
                   </Box>
+                ) : (
+                  <Box />
                 )}
 
-                {results.stampDuty && results.stampDuty > 0 && (
+                {results.stampDuty && results.stampDuty > 0 ? (
                   <Box sx={{ mb: 2 }}>
                     <TermWithInfo 
                       term="Stamp Duty (NSW estimate)"
@@ -361,6 +367,8 @@ flowchart TD
                       {formatCurrency(results.stampDuty)}
                     </Typography>
                   </Box>
+                ) : (
+                  <Box />
                 )}
               </CardContent>
             </Card>
@@ -389,7 +397,7 @@ flowchart TD
             </CardContent>
           </Card>
 
-          {inputs.offsetBalance && inputs.offsetBalance > 0 && (
+          {inputs.offsetBalance && inputs.offsetBalance > 0 ? (
             <Card elevation={1} sx={{ mt: 3, bgcolor: 'success.light' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -455,6 +463,8 @@ flowchart LR
                 </Alert>
               </CardContent>
             </Card>
+          ) : (
+            <Box />
           )}
         </>
       )}
