@@ -198,7 +198,7 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
   const defaultTrigger = (
     <Chip
       icon={<Timeline />}
-      label="View Calculation Flow"
+      label="How ?"
       onClick={handleOpen}
       variant="outlined"
       color="primary"
