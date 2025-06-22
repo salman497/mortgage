@@ -221,7 +221,17 @@ function App() {
       <AppBar position="static" elevation={0}>
         <Toolbar>
           <Home sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography 
+            variant="h6" 
+            component="div" 
+            sx={{ 
+              flexGrow: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              minWidth: 0 // Allows flex item to shrink below its content size
+            }}
+          >
             Australian Mortgage - Take Control
           </Typography>
           <PayPalDonate />
@@ -229,9 +239,20 @@ function App() {
             color="inherit"
             startIcon={<RestartAlt />}
             onClick={() => setResetDialogOpen(true)}
-            sx={{ ml: 2 }}
+            sx={{ 
+              ml: 2,
+              minWidth: 'auto', // Prevents button from being too wide on mobile
+              '& .MuiButton-startIcon': {
+                display: { xs: 'none', sm: 'flex' } // Hide icon on extra small screens
+              }
+            }}
           >
-            Reset All
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+              Reset All
+            </Box>
+            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
+              Reset
+            </Box>
           </Button>
         </Toolbar>
       </AppBar>
