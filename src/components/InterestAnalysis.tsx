@@ -26,6 +26,7 @@ import {
 import { MortgageInputs } from '../types';
 import { generateChartData, formatCurrency } from '../utils/mortgageCalculations';
 import TermWithInfo, { getExplanation } from './TermWithInfo';
+import MermaidDiagramModal from './MermaidDiagramModal';
 
 interface InterestAnalysisProps {
   inputs: MortgageInputs;
@@ -75,9 +76,31 @@ const InterestAnalysis: React.FC<InterestAnalysisProps> = ({
         <Box sx={{ flex: 1 }}>
           <Card elevation={1}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Loan Parameters
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">
+                  Loan Parameters
+                </Typography>
+                <MermaidDiagramModal
+                  title="Extra Payment Impact Analysis"
+                  description="This diagram shows how extra payments dramatically reduce your total interest and loan term by paying down the principal faster."
+                  mermaidCode={`
+flowchart TD
+    A["Base Monthly Payment: ${formatCurrency(Math.round((inputs.loanAmount * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1)))}"] --> B[Payment Split]
+    C["Extra Payment: ${formatCurrency(extraPayment)}"] --> D[Total Payment]
+    A --> D
+    D --> E["Total Monthly: ${formatCurrency(Math.round((inputs.loanAmount * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1)) + extraPayment)}"]
+    B --> F[Interest Portion]
+    B --> G[Principal Portion]
+    C --> H[Extra to Principal]
+    G --> I[Total Principal Payment]
+    H --> I
+    I --> J[Faster Loan Payoff]
+    J --> K[Reduced Total Interest]
+    L[Compound Effect] --> M["Each extra payment reduces<br/>future interest calculations"]
+    N[Time Savings] --> O["Months/Years saved<br/>on loan term"]
+                  `}
+                />
+              </Box>
               
               <Box sx={{ mb: 2 }}>
                 <TermWithInfo 
@@ -142,9 +165,20 @@ const InterestAnalysis: React.FC<InterestAnalysisProps> = ({
         <Box sx={{ flex: 1 }}>
           <Card elevation={1}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Total Interest vs Principal
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">
+                  Total Interest vs Principal
+                </Typography>
+                <MermaidDiagramModal
+                  title="Principal vs Interest Breakdown"
+                  description="This diagram shows the relationship between your loan principal and the total interest you'll pay over the life of the loan."
+                  mermaidCode={`
+pie title Loan Payment Breakdown
+    "Principal (What you borrowed)" : ${inputs.loanAmount}
+    "Interest (Bank's profit)" : ${Math.round(finalData?.cumulativeInterest || 0)}
+                  `}
+                />
+              </Box>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie

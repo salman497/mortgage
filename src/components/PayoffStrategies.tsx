@@ -25,6 +25,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { MortgageInputs } from '../types';
 import { comparePayoffStrategies, formatCurrency } from '../utils/mortgageCalculations';
 import TermWithInfo, { getExplanation } from './TermWithInfo';
+import MermaidDiagramModal from './MermaidDiagramModal';
 
 interface PayoffStrategiesProps {
   inputs: MortgageInputs;
@@ -105,9 +106,33 @@ const PayoffStrategies: React.FC<PayoffStrategiesProps> = ({ inputs }) => {
 
       <Card elevation={1} sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Strategy Comparison - Your Loan: {formatCurrency(inputs.loanAmount)} at {inputs.interestRate}%
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6">
+              Strategy Comparison - Your Loan: {formatCurrency(inputs.loanAmount)} at {inputs.interestRate}%
+            </Typography>
+            <MermaidDiagramModal
+              title="Payoff Strategy Comparison"
+              description="This diagram shows how different payoff strategies can dramatically reduce your loan term and total interest paid."
+              mermaidCode={`
+flowchart TD
+    A["Standard Loan: ${formatCurrency(inputs.loanAmount)} at ${inputs.interestRate}%"] --> B[Payment Strategies]
+    B --> C[Minimum Payments]
+    B --> D[Weekly Payments]
+    B --> E[Extra Payments]
+    B --> F[Offset Account]
+    
+    C --> G["${inputs.loanTermYears} years<br/>Total Interest: ${formatCurrency(scenarios.find(s => s.name === 'Minimum Payment')?.totalInterest || 0)}"]
+    
+    D --> H["~${(scenarios.find(s => s.name === 'Weekly Payments')?.payoffTime || inputs.loanTermYears).toFixed(1)} years<br/>Interest Saved: ${formatCurrency(scenarios.find(s => s.name === 'Weekly Payments')?.totalSavings || 0)}"]
+    
+    E --> I["Flexible timeline<br/>Every $100 extra = $200-300 saved"]
+    
+    F --> J["Accessible savings<br/>Tax-free interest reduction"]
+    
+    K[Key Insight] --> L["Small changes = Big savings<br/>The earlier you start, the more you save"]
+              `}
+            />
+          </Box>
           
           <TableContainer>
             <Table>

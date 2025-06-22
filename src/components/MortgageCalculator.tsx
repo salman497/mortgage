@@ -14,6 +14,7 @@ import { MortgageInputs, MortgageCalculation } from '../types';
 import { calculateMortgageDetails, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
 import NumberInputWithK from './NumberInputWithK';
 import TermWithInfo, { getExplanation } from './TermWithInfo';
+import MermaidDiagramModal from './MermaidDiagramModal';
 
 interface MortgageCalculatorProps {
   inputs: MortgageInputs;
@@ -181,9 +182,33 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
           {results && (
             <Card elevation={1}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Monthly Payment Breakdown
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="h6">
+                    Monthly Payment Breakdown
+                  </Typography>
+                  <MermaidDiagramModal
+                    title="Monthly Payment Calculation"
+                    description="This diagram shows how your monthly mortgage payment is calculated using the amortization formula and how it's split between principal and interest."
+                    mermaidCode={`
+flowchart TD
+    A["Loan Amount: ${formatCurrency(inputs.loanAmount)}"] --> B[Monthly Interest Rate]
+    C["Annual Rate: ${inputs.interestRate}%"] --> B
+    B --> D["Monthly Rate = ${inputs.interestRate}% ÷ 12 = ${(inputs.interestRate/12).toFixed(3)}%"]
+    E["Loan Term: ${inputs.loanTermYears} years"] --> F["Total Payments = ${inputs.loanTermYears} × 12 = ${(inputs.loanTermYears * 12)} months"]
+    A --> G[Amortization Formula]
+    D --> G
+    F --> G
+    G --> H["Monthly Payment = ${formatCurrency(results.monthlyPayment)}"]
+    H --> I[Payment Split]
+    I --> J["Principal: ${formatCurrency(results.monthlyPrincipal)}"]
+    I --> K["Interest: ${formatCurrency(results.monthlyInterest)}"]
+    L["Offset Balance: ${formatCurrency(inputs.offsetBalance || 0)}"] --> M[Effective Balance]
+    A --> M
+    M --> N["${formatCurrency(Math.max(0, inputs.loanAmount - (inputs.offsetBalance || 0)))}"]
+    N --> K
+                    `}
+                  />
+                </Box>
                 
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="h4" color="primary" gutterBottom>
@@ -228,9 +253,30 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                 <Divider sx={{ my: 2 }} />
 
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Total Interest Over Life of Loan
-                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Interest Over Life of Loan
+                    </Typography>
+                    <MermaidDiagramModal
+                      title="Total Interest Calculation"
+                      description="This diagram shows how your total interest is calculated over the life of the loan, including the impact of your offset account."
+                      mermaidCode={`
+flowchart TD
+    A["Monthly Payment: ${formatCurrency(results.monthlyPayment)}"] --> B[Payment Schedule]
+    C["Loan Term: ${inputs.loanTermYears} years (${inputs.loanTermYears * 12} payments)"] --> B
+    D["Offset Balance: ${formatCurrency(inputs.offsetBalance || 0)}"] --> E[Effective Interest]
+    F["Loan Balance Each Month"] --> E
+    E --> G[Monthly Interest Payment]
+    G --> H[Cumulative Interest]
+    B --> H
+    H --> I["Total Interest: ${formatCurrency(results.totalInterest)}"]
+    J["Original Loan: ${formatCurrency(inputs.loanAmount)}"] --> K[Total Cost]
+    I --> K
+    K --> L["Total You'll Pay: ${formatCurrency(results.totalPayment)}"]
+    M["Interest as % of Loan"] --> N["${formatPercentage((results.totalInterest / inputs.loanAmount) * 100)}"]
+                      `}
+                    />
+                  </Box>
                   <Typography variant="h5" color="error">
                     {formatCurrency(results.totalInterest)}
                   </Typography>
@@ -254,13 +300,38 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
 
                 {results.lmiAmount && results.lmiAmount > 0 && (
                   <Box sx={{ mb: 2 }}>
-                    <TermWithInfo 
-                      term="Lender's Mortgage Insurance (LMI)"
-                      explanation={getExplanation('LMI')}
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
-                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <TermWithInfo 
+                        term="Lender's Mortgage Insurance (LMI)"
+                        explanation={getExplanation('LMI')}
+                        variant="body2"
+                        color="text.secondary"
+                      />
+                      <MermaidDiagramModal
+                        title="LMI Calculation"
+                        description="This diagram shows how Lender's Mortgage Insurance (LMI) is calculated based on your Loan-to-Value Ratio (LVR)."
+                        mermaidCode={`
+flowchart TD
+    A["Loan Amount: ${formatCurrency(inputs.loanAmount)}"] --> C[LVR Calculation]
+    B["Property Value: ${formatCurrency(inputs.propertyValue || 0)}"] --> C
+    C --> D["LVR = ${formatPercentage(loanToValueRatio)}"]
+    D --> E{LVR > 80%?}
+    E -->|No| F["No LMI Required"]
+    E -->|Yes| G[LMI Rate Determination]
+    G --> H{LVR Range}
+    H -->|80-85%| I["LMI Rate: 0.5%"]
+    H -->|85-90%| J["LMI Rate: 1.0%"]
+    H -->|90-95%| K["LMI Rate: 1.5%"]
+    H -->|95%+| L["LMI Rate: 2.0%"]
+    I --> M[Calculate LMI]
+    J --> M
+    K --> M
+    L --> M
+    A --> M
+    M --> N["LMI = ${formatCurrency(results.lmiAmount)}"]
+                        `}
+                      />
+                    </Box>
                     <Typography variant="h6" color="warning.main">
                       {formatCurrency(results.lmiAmount)}
                     </Typography>
@@ -311,9 +382,30 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
           {inputs.offsetBalance && inputs.offsetBalance > 0 && (
             <Card elevation={1} sx={{ mt: 3, bgcolor: 'success.light' }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  🎉 Offset Account Benefits
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="h6">
+                    🎉 Offset Account Benefits
+                  </Typography>
+                  <MermaidDiagramModal
+                    title="Offset Account Benefits"
+                    description="This diagram shows how your offset account saves you money by reducing the effective loan balance that accrues interest."
+                    mermaidCode={`
+flowchart TD
+    A["Original Loan: ${formatCurrency(inputs.loanAmount)}"] --> B[Offset Impact]
+    C["Offset Balance: ${formatCurrency(inputs.offsetBalance)}"] --> B
+    B --> D["Effective Loan Balance"]
+    D --> E["${formatCurrency(Math.max(0, inputs.loanAmount - inputs.offsetBalance))}"]
+    F["Interest Rate: ${inputs.interestRate}%"] --> G[Monthly Savings]
+    C --> G
+    G --> H["Monthly Interest Savings"]
+    H --> I["${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}"]
+    G --> J[Annual Savings]
+    J --> K["${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100)}"]
+    L[Effective Interest Rate] --> M["${formatPercentage(inputs.interestRate * (1 - inputs.offsetBalance / inputs.loanAmount))}"]
+    N[Tax Benefits] --> O["Tax-Free Savings<br/>(Unlike term deposits)"]
+                    `}
+                  />
+                </Box>
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
                   <Box sx={{ flex: 1 }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>

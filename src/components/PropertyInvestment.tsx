@@ -21,6 +21,7 @@ import { PropertyInvestmentInputs } from '../types';
 import { calculateNegativeGearing, formatCurrency, formatPercentage } from '../utils/mortgageCalculations';
 import NumberInputWithK from './NumberInputWithK';
 import TermWithInfo, { getExplanation } from './TermWithInfo';
+import MermaidDiagramModal from './MermaidDiagramModal';
 
 interface PropertyInvestmentProps {
   inputs: PropertyInvestmentInputs;
@@ -172,9 +173,38 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
         <Box sx={{ flex: 1 }}>
           <Card elevation={1}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Investment Analysis
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">
+                  Investment Analysis
+                </Typography>
+                <MermaidDiagramModal
+                  title="Property Investment Cash Flow Analysis"
+                  description="This diagram shows how rental income, expenses, and tax benefits combine to determine your investment property's cash flow."
+                  mermaidCode={`
+flowchart TD
+    A["Property Price: ${formatCurrency(inputs.propertyPrice)}"] --> B[Loan Details]
+    C["Deposit: ${formatCurrency(inputs.deposit)}"] --> B
+    B --> D["Loan Amount: ${formatCurrency(inputs.propertyPrice - inputs.deposit)}"]
+    D --> E[Monthly Payments]
+    F["Interest Rate: ${inputs.interestRate}%"] --> E
+    E --> G["Monthly Payment: ${formatCurrency(((inputs.propertyPrice - inputs.deposit) * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1))}"]
+    
+    H["Weekly Rental: ${formatCurrency(inputs.rentalIncome)}"] --> I[Income]
+    I --> J["Monthly Rental: ${formatCurrency(inputs.rentalIncome * 52/12)}"]
+    
+    K["Weekly Expenses: ${formatCurrency(inputs.expenses)}"] --> L[Costs]
+    L --> M["Monthly Expenses: ${formatCurrency(inputs.expenses * 52/12)}"]
+    G --> N[Cash Flow]
+    J --> N
+    M --> N
+    N --> O["Monthly Cash Flow: ${formatCurrency(investmentAnalysis.cashFlow/12)}"]
+    
+    P["Tax Rate: ${inputs.taxRate}%"] --> Q[Tax Benefits]
+    N --> Q
+    Q --> R["After-Tax Cash Flow"]
+                  `}
+                />
+              </Box>
               
               <Box sx={{ mb: 3 }}>
                 <TermWithInfo 
