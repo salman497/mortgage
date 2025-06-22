@@ -38,6 +38,17 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
+  // Callback ref to ensure we catch when element is mounted
+  const setDiagramRef = React.useCallback((node: HTMLDivElement | null) => {
+    console.log('🔍 Mermaid Debug - Callback ref called with:', node);
+    diagramRef.current = node;
+    if (node && open) {
+      console.log('🔍 Mermaid Debug - Element mounted while modal is open, rendering...');
+      // Small delay to ensure the element is fully in the DOM
+      setTimeout(() => renderDiagram(), 10);
+    }
+  }, [open]);
+
   // Initialize Mermaid
   useEffect(() => {
     try {
@@ -64,13 +75,38 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
 
   // Render diagram when modal opens
   useEffect(() => {
-    if (open && diagramRef.current) {
-      renderDiagram();
+    if (open) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      const frameId = requestAnimationFrame(() => {
+        const checkAndRender = (attempt = 1) => {
+          console.log(`🔍 Mermaid Debug - Attempt ${attempt}, diagramRef.current:`, diagramRef.current);
+          
+          if (diagramRef.current) {
+            console.log('🔍 Mermaid Debug - Element found, rendering...');
+            renderDiagram();
+          } else if (attempt < 10) {
+            // Retry up to 10 times with increasing delays
+            setTimeout(() => checkAndRender(attempt + 1), attempt * 50);
+          } else {
+            console.error('🔍 Mermaid Debug - Failed to find element after 10 attempts');
+            setError('Unable to mount diagram container - element not found');
+          }
+        };
+        
+        checkAndRender();
+      });
+      
+      return () => {
+        cancelAnimationFrame(frameId);
+      };
     }
   }, [open, mermaidCode]);
 
   const renderDiagram = async () => {
-    if (!diagramRef.current) return;
+    if (!diagramRef.current) {
+      console.warn('🔍 Mermaid Debug - diagramRef.current is null at start of renderDiagram');
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -87,6 +123,12 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
         throw new Error('Mermaid code is empty or contains only whitespace');
       }
 
+      // Check ref again before clearing
+      if (!diagramRef.current) {
+        console.warn('🔍 Mermaid Debug - diagramRef.current became null before clearing innerHTML');
+        return;
+      }
+
       // Clear previous diagram
       diagramRef.current.innerHTML = '';
       
@@ -101,9 +143,21 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
       
       console.log('🔍 Mermaid Debug - Render successful, SVG length:', typeof svg === 'string' ? svg.length : 'Not a string');
       
+      // Check ref again after async operation
+      if (!diagramRef.current) {
+        console.warn('🔍 Mermaid Debug - diagramRef.current became null after mermaid.render');
+        return;
+      }
+      
       // Insert the SVG into the container
       if (typeof svg === 'string') {
         diagramRef.current.innerHTML = svg;
+        
+        // Check ref again before querying
+        if (!diagramRef.current) {
+          console.warn('🔍 Mermaid Debug - diagramRef.current became null after setting innerHTML');
+          return;
+        }
         
         // Make the diagram responsive
         const svgElement = diagramRef.current.querySelector('svg');
@@ -243,18 +297,18 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
             )}
 
             {!loading && !error && (
-              <Box
-                ref={diagramRef}
-                sx={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  '& svg': {
-                    maxWidth: '100%',
-                    height: 'auto',
-                  },
-                }}
-              />
+                          <Box
+              ref={setDiagramRef}
+              sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                '& svg': {
+                  maxWidth: '100%',
+                  height: 'auto',
+                },
+              }}
+            />
             )}
 
             {/* Fallback for empty diagram */}
