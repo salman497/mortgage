@@ -222,7 +222,7 @@ function App() {
         <Toolbar>
           <Home sx={{ mr: 2 }} />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Understand Your Mortgage - Don't Let Banks Fool You
+            Australian Mortgage - Take Control
           </Typography>
           <PayPalDonate />
           <Button
