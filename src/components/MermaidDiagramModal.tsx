@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,8 +11,10 @@ import {
   useMediaQuery,
   useTheme,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import { Close, Timeline } from '@mui/icons-material';
+import mermaid from 'mermaid';
 
 interface MermaidDiagramModalProps {
   title: string;
@@ -30,8 +32,100 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
   disabled = false,
 }) => {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const diagramRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Initialize Mermaid
+  useEffect(() => {
+    try {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        securityLevel: 'loose',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: 14,
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        pie: {
+          textPosition: 0.75,
+        },
+      });
+      console.log('🔍 Mermaid initialized successfully');
+    } catch (error) {
+      console.error('🔍 Mermaid initialization error:', error);
+    }
+  }, []);
+
+  // Render diagram when modal opens
+  useEffect(() => {
+    if (open && diagramRef.current) {
+      renderDiagram();
+    }
+  }, [open, mermaidCode]);
+
+  const renderDiagram = async () => {
+    if (!diagramRef.current) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Debug logging
+      console.log('🔍 Mermaid Debug - Starting render:', {
+        mermaidCode: mermaidCode.trim(),
+        codeLength: mermaidCode.length,
+        isEmpty: !mermaidCode.trim()
+      });
+
+      if (!mermaidCode.trim()) {
+        throw new Error('Mermaid code is empty or contains only whitespace');
+      }
+
+      // Clear previous diagram
+      diagramRef.current.innerHTML = '';
+      
+      // Generate unique ID for this diagram
+      const diagramId = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      console.log('🔍 Mermaid Debug - Attempting render with ID:', diagramId);
+      
+      // For mermaid v10.9.1, use the render method correctly
+      const result = await mermaid.render(diagramId, mermaidCode.trim());
+      const svg = result.svg || result; // Handle different return formats
+      
+      console.log('🔍 Mermaid Debug - Render successful, SVG length:', typeof svg === 'string' ? svg.length : 'Not a string');
+      
+      // Insert the SVG into the container
+      if (typeof svg === 'string') {
+        diagramRef.current.innerHTML = svg;
+        
+        // Make the diagram responsive
+        const svgElement = diagramRef.current.querySelector('svg');
+        if (svgElement) {
+          svgElement.style.maxWidth = '100%';
+          svgElement.style.height = 'auto';
+          svgElement.style.display = 'block';
+          console.log('🔍 Mermaid Debug - SVG styles applied');
+        } else {
+          console.warn('🔍 Mermaid Debug - No SVG element found after render');
+        }
+      } else {
+        throw new Error('Mermaid render did not return expected SVG string');
+      }
+    } catch (err) {
+      console.error('🔍 Mermaid rendering error:', err);
+      console.error('🔍 Mermaid code that failed:', mermaidCode);
+      setError(`Failed to render diagram: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOpen = () => {
     if (!disabled) {
@@ -41,6 +135,9 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
 
   const handleClose = () => {
     setOpen(false);
+    if (diagramRef.current) {
+      diagramRef.current.innerHTML = '';
+    }
   };
 
   // Default trigger component if none provided
@@ -122,43 +219,60 @@ const MermaidDiagramModal: React.FC<MermaidDiagramModalProps> = ({
               p: 3,
               border: '1px solid #e0e0e0',
               overflow: 'auto',
+              position: 'relative',
             }}
           >
-            {/* Improved visual for the diagram code */}
-            <Box
-              sx={{
-                width: '100%',
-                maxWidth: '100%',
-                textAlign: 'center',
-              }}
-            >
-              <Typography variant="h6" color="primary" gutterBottom>
-                📊 Interactive Calculation Flow
-              </Typography>
-              <Box
-                component="pre"
-                sx={{
-                  fontSize: '0.8rem',
-                  fontFamily: 'Monaco, Consolas, "Courier New", monospace',
-                  bgcolor: 'white',
-                  p: 2,
-                  borderRadius: 1,
-                  border: '1px solid #ddd',
-                  textAlign: 'left',
-                  overflow: 'auto',
-                  maxHeight: '50vh',
-                  lineHeight: 1.4,
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                }}
-              >
-                {mermaidCode.trim()}
+            {loading && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                <CircularProgress color="primary" />
+                <Typography variant="body2" color="text.secondary">
+                  Rendering diagram...
+                </Typography>
               </Box>
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                💡 This shows the step-by-step calculation process with your current values
-              </Typography>
-            </Box>
+            )}
+            
+            {error && (
+              <Box sx={{ textAlign: 'center', color: 'error.main' }}>
+                <Typography variant="body1" gutterBottom>
+                  ⚠️ {error}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  The calculation logic is still working correctly.
+                </Typography>
+              </Box>
+            )}
+
+            {!loading && !error && (
+              <Box
+                ref={diagramRef}
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  '& svg': {
+                    maxWidth: '100%',
+                    height: 'auto',
+                  },
+                }}
+              />
+            )}
+
+            {/* Fallback for empty diagram */}
+            {!loading && !error && diagramRef.current && !diagramRef.current.innerHTML && (
+              <Box sx={{ textAlign: 'center', color: 'warning.main' }}>
+                <Typography variant="body1" gutterBottom>
+                  🔍 Diagram appears empty
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Check browser console for debugging information
+                </Typography>
+              </Box>
+            )}
           </Box>
+
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block', textAlign: 'center' }}>
+            💡 This interactive diagram shows the step-by-step calculation process with your current values
+          </Typography>
         </DialogContent>
 
         <DialogActions sx={{ p: 2, bgcolor: '#f5f5f5' }}>
