@@ -115,21 +115,22 @@ const PayoffStrategies: React.FC<PayoffStrategiesProps> = ({ inputs }) => {
               description="Compare different approaches to paying off your mortgage faster and see their relative benefits."
               mermaidCode={`
 graph TB
-    subgraph "🎯 Your Goal: Pay Less Interest"
-        Goal[Save Money & Time]
+    subgraph "🎯 Your Mortgage Goal"
+        Goal[💰 Save Money & Time<br/>Minimize Interest Payments]
     end
     
-    subgraph "📊 Strategy Options"
-        A[🗓️ Minimum Payments<br/>${inputs.loanTermYears} years<br/>${formatCurrency(scenarios.find(s => s.name === 'Minimum Payment')?.totalInterest || 0)} interest]
-        B[📅 Weekly Payments<br/>${(scenarios.find(s => s.name === 'Weekly Payments')?.payoffTime || inputs.loanTermYears).toFixed(1)} years<br/>Save: ${formatCurrency(scenarios.find(s => s.name === 'Weekly Payments')?.totalSavings || 0)}]
-        C[💰 Extra Payments<br/>Flexible timeline<br/>Every $100 = $200-300 saved]
-        D[🏦 Offset Account<br/>Keep access to money<br/>Tax-free savings]
+    subgraph "📊 Payment Strategy Options"
+        A["🗓️ Minimum Payments<br/>📅 ${inputs.loanTermYears} years<br/>💸 ${formatCurrency(scenarios.find(s => s.name === 'Minimum Payment')?.totalInterest || 0)} total interest"]
+        B["📅 Weekly Payments<br/>⏰ ${(scenarios.find(s => s.name === 'Weekly Payments')?.payoffTime || inputs.loanTermYears).toFixed(1)} years<br/>💰 Save: ${formatCurrency(scenarios.find(s => s.name === 'Weekly Payments')?.totalSavings || 0)}"]
+        C[💪 Extra Monthly Payments<br/>🎯 Flexible timeline<br/>📈 Every $100 saves $200-300]
+        D[🏦 Offset Account<br/>💳 Keep money accessible<br/>🚫 Tax-free interest savings]
     end
     
-    subgraph "💡 Pro Tips"
-        E[Start Early = More Savings]
-        F[Combine Strategies]
-        G[Review Regularly]
+    subgraph "💡 Smart Money Tips"
+        E[⚡ Start Early = Maximum Savings]
+        F[🔄 Combine Multiple Strategies]
+        G[📊 Review & Adjust Regularly]
+        H[🧮 Use Online Calculators]
     end
     
     Goal --> A
@@ -139,8 +140,20 @@ graph TB
     
     A -.->|Safest but slowest| E
     B -.->|13th payment effect| E
-    C -.->|Most flexible| F
-    D -.->|Keep liquidity| F
+    C -.->|Most flexible control| F
+    D -.->|Maintains liquidity| F
+    
+    E --> G
+    F --> G
+    G --> H
+    
+    classDef goal fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+    classDef strategy fill:#fff2e8,stroke:#ff9800,stroke-width:2px
+    classDef tip fill:#e8f0ff,stroke:#2196f3,stroke-width:2px
+    
+    class Goal goal
+    class A,B,C,D strategy
+    class E,F,G,H tip
               `}
             />
           </Box>

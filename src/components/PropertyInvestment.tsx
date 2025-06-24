@@ -181,37 +181,46 @@ const PropertyInvestment: React.FC<PropertyInvestmentProps> = ({ inputs, onInput
                   title="Investment Property Cash Flow"
                   description="This diagram shows how your rental income, expenses, and tax benefits work together to determine your investment returns."
                   mermaidCode={`
-flowchart LR
-    subgraph "💰 Money In"
-        A[Rental Income<br/>${formatCurrency(inputs.rentalIncome * 52/12)}/month]
+flowchart TB
+    subgraph "💰 Income Sources"
+        A[🏠 Rental Income<br/>${formatCurrency(inputs.rentalIncome * 52/12)}/month]
     end
     
-    subgraph "💸 Money Out"
-        B[Loan Payment<br/>${formatCurrency(((inputs.propertyPrice - inputs.deposit) * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1))}]
-        C[Property Expenses<br/>${formatCurrency(inputs.expenses * 52/12)}/month]
+    subgraph "💸 Monthly Expenses"
+        B["🏦 Loan Payment<br/>${formatCurrency(((inputs.propertyPrice - inputs.deposit) * (inputs.interestRate/100/12) * Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12)) / (Math.pow(1 + inputs.interestRate/100/12, inputs.loanTermYears * 12) - 1))}/month"]
+        C[🔧 Property Expenses<br/>${formatCurrency(inputs.expenses * 52/12)}/month]
     end
     
-    subgraph "📊 Cash Flow"
-        D[Monthly Result<br/>${formatCurrency(investmentAnalysis.cashFlow/12)}]
-        E{Positive or Negative?}
+    subgraph "📊 Cash Flow Analysis"
+        D[📈 Monthly Cash Flow<br/>${formatCurrency(investmentAnalysis.cashFlow/12)}]
+        E{🤔 Positive or Negative?}
     end
     
-    subgraph "🏛️ Tax Impact"
-        F[Tax Benefits<br/>Interest & Expenses<br/>are deductible]
-        G[Your Tax Rate<br/>${inputs.taxRate}%]
+    subgraph "🏛️ Tax Benefits"
+        F[💼 Tax Deductions<br/>Interest + Expenses<br/>= Tax Deductible]
+        G[📋 Your Tax Rate<br/>${inputs.taxRate}%]
+        H[💰 Tax Refund<br/>Reduces actual cost]
     end
     
     A --> D
     B --> D
     C --> D
     D --> E
-    E -->|Negative| F
+    E -->|Negative Cash Flow| F
+    E -->|Positive Cash Flow| I[🎉 Positive Gearing<br/>Self-funding property]
     F --> G
-    G --> H[Tax Refund<br/>Reduces your cost]
+    G --> H
+    H --> J[📊 Net Position<br/>After tax benefits]
     
-    style A fill:#e8f5e8
-    style D fill:#fff2e8
-    style F fill:#e8f0ff
+    classDef income fill:#e8f5e8,stroke:#4caf50
+    classDef expense fill:#ffe8e8,stroke:#f44336
+    classDef analysis fill:#fff2e8,stroke:#ff9800
+    classDef tax fill:#e8f0ff,stroke:#2196f3
+    
+    class A income
+    class B,C expense
+    class D,E,I analysis
+    class F,G,H,J tax
                   `}
                 />
               </Box>

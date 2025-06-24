@@ -195,31 +195,67 @@ const MortgageCalculator: React.FC<MortgageCalculatorProps> = ({ inputs, onInput
                     description="This diagram shows the step-by-step calculation process for determining your monthly mortgage payment."
                     mermaidCode={`
 flowchart TD
-    A[🏠 Loan Amount<br/>${formatCurrency(inputs.loanAmount)}] --> D[📊 Calculation Inputs]
-    B[📈 Interest Rate<br/>${inputs.interestRate}% per year] --> D
-    C[⏰ Loan Term<br/>${inputs.loanTermYears} years] --> D
+    subgraph "📊 Input Values"
+        A[🏠 Loan Amount<br/>${formatCurrency(inputs.loanAmount)}]
+        B[📈 Interest Rate<br/>${inputs.interestRate}% per year]
+        C[⏰ Loan Term<br/>${inputs.loanTermYears} years]
+    end
     
-    D --> E[🔢 Convert to Monthly]
-    E --> F[Monthly Rate = ${inputs.interestRate}% ÷ 12<br/>= ${(inputs.interestRate/12).toFixed(3)}%]
-    E --> G[Total Payments = ${inputs.loanTermYears} × 12<br/>= ${inputs.loanTermYears * 12} months]
+    subgraph "🔄 Conversion Process"
+        D[📅 Convert to Monthly Terms]
+                 E["💯 Monthly Rate<br/>${inputs.interestRate}% ÷ 12<br/>= ${(inputs.interestRate/12).toFixed(3)}%"]
+        F["📊 Total Payments<br/>${inputs.loanTermYears} × 12<br/>= ${inputs.loanTermYears * 12} months"]
+    end
     
-    F --> H[🧮 Amortization Formula]
-    G --> H
-    A --> H
+    subgraph "🧮 Formula Calculation"
+                 G["⚡ Amortization Formula<br/>PMT = P × [r(1+r)^n] / [(1+r)^n-1]"]
+        H[💰 Monthly Payment Result<br/>${formatCurrency(results.monthlyPayment)}]
+    end
     
-    H --> I[💰 Monthly Payment<br/>${formatCurrency(results.monthlyPayment)}]
-    
-    I --> J[📋 Payment Breakdown]
-    J --> K[🏛️ Interest Portion<br/>${formatCurrency(results.monthlyInterest)}<br/>Goes to bank]
-    J --> L[🏗️ Principal Portion<br/>${formatCurrency(results.monthlyPrincipal)}<br/>Reduces loan balance]
+    subgraph "📋 Payment Breakdown"
+        I[🏛️ Interest Portion<br/>${formatCurrency(results.monthlyInterest)}<br/>💸 Goes to bank profit]
+        J[🏗️ Principal Portion<br/>${formatCurrency(results.monthlyPrincipal)}<br/>🏠 Reduces loan balance]
+    end
     
     ${inputs.offsetBalance && inputs.offsetBalance > 0 ? `
-    M[💳 Offset Balance<br/>${formatCurrency(inputs.offsetBalance)}] --> N[⚡ Reduces Interest<br/>Saves ${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}/month]
-    N -.->|Affects| K` : ''}
+    subgraph "💳 Offset Account Impact"
+        K[💰 Offset Balance<br/>${formatCurrency(inputs.offsetBalance)}]
+        L[⚡ Interest Reduction<br/>Saves ${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}/month]
+    end
+    ` : ''}
     
-    style A fill:#e8f5e8
-    style I fill:#fff2e8
-    style H fill:#e8f0ff
+    A --> D
+    B --> D
+    C --> D
+    
+    D --> E
+    D --> F
+    
+    A --> G
+    E --> G
+    F --> G
+    
+    G --> H
+    
+    H --> I
+    H --> J
+    
+    ${inputs.offsetBalance && inputs.offsetBalance > 0 ? `
+    K --> L
+    L -.->|Reduces| I
+    ` : ''}
+    
+    classDef input fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef process fill:#fff2e8,stroke:#ff9800,stroke-width:2px
+    classDef calculation fill:#e8f0ff,stroke:#2196f3,stroke-width:2px
+    classDef breakdown fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    classDef offset fill:#e0f2f1,stroke:#009688,stroke-width:2px
+    
+    class A,B,C input
+    class D,E,F process
+    class G,H calculation
+    class I,J breakdown
+    ${inputs.offsetBalance && inputs.offsetBalance > 0 ? `class K,L offset` : ''}
                     `}
                   />
                 </Box>
@@ -276,18 +312,52 @@ flowchart TD
                       description="This diagram shows how your total interest is calculated over the life of the loan, including the impact of your offset account."
                       mermaidCode={`
 flowchart TD
-    A["Monthly Payment: ${formatCurrency(results.monthlyPayment)}"] --> B[Payment Schedule]
-    C["Loan Term: ${inputs.loanTermYears} years (${inputs.loanTermYears * 12} payments)"] --> B
-    D["Offset Balance: ${formatCurrency(inputs.offsetBalance || 0)}"] --> E[Effective Interest]
-    F["Loan Balance Each Month"] --> E
-    E --> G[Monthly Interest Payment]
-    G --> H[Cumulative Interest]
-    B --> H
-    H --> I["Total Interest: ${formatCurrency(results.totalInterest)}"]
-    J["Original Loan: ${formatCurrency(inputs.loanAmount)}"] --> K[Total Cost]
-    I --> K
-    K --> L["Total You'll Pay: ${formatCurrency(results.totalPayment)}"]
-    M["Interest as % of Loan"] --> N["${formatPercentage((results.totalInterest / inputs.loanAmount) * 100)}"]
+    subgraph "📅 Payment Schedule"
+        A[💳 Monthly Payment<br/>${formatCurrency(results.monthlyPayment)}]
+                 B["📊 Loan Term<br/>${inputs.loanTermYears} years<br/>(${inputs.loanTermYears * 12} total payments)"]
+    end
+    
+    subgraph "💰 Balance & Interest Calculation"
+        C[🏠 Starting Loan Balance<br/>${formatCurrency(inputs.loanAmount)}]
+        D[💳 Offset Balance<br/>${formatCurrency(inputs.offsetBalance || 0)}]
+        E[📈 Effective Balance<br/>for Interest Calculation]
+        F[📊 Monthly Interest Payment<br/>varies each month]
+    end
+    
+    subgraph "📊 Cumulative Totals"
+        G[💸 Total Interest Paid<br/>${formatCurrency(results.totalInterest)}]
+        H[🏠 Original Loan Amount<br/>${formatCurrency(inputs.loanAmount)}]
+        I[💰 Total You'll Pay<br/>${formatCurrency(results.totalPayment)}]
+    end
+    
+    subgraph "📈 Impact Analysis"
+        J[📊 Interest as % of Loan<br/>${formatPercentage((results.totalInterest / inputs.loanAmount) * 100)}]
+        K[💡 Why This Matters<br/>Every dollar to interest<br/>is a dollar not building equity]
+    end
+    
+    A --> E
+    B --> E
+    C --> E
+    D -.->|Reduces| E
+    
+    E --> F
+    F --> G
+    
+    H --> I
+    G --> I
+    
+    G --> J
+    J --> K
+    
+    classDef payment fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef calculation fill:#fff2e8,stroke:#ff9800,stroke-width:2px
+    classDef totals fill:#e8f0ff,stroke:#2196f3,stroke-width:2px
+    classDef analysis fill:#ffebee,stroke:#f44336,stroke-width:2px
+    
+    class A,B payment
+    class C,D,E,F calculation
+    class G,H,I totals
+    class J,K analysis
                       `}
                     />
                   </Box>
@@ -326,23 +396,68 @@ flowchart TD
                         description="This diagram shows how Lender's Mortgage Insurance (LMI) is calculated based on your Loan-to-Value Ratio (LVR)."
                         mermaidCode={`
 flowchart TD
-    A["Loan Amount: ${formatCurrency(inputs.loanAmount)}"] --> C[LVR Calculation]
-    B["Property Value: ${formatCurrency(inputs.propertyValue || 0)}"] --> C
-    C --> D["LVR = ${formatPercentage(loanToValueRatio)}"]
-    D --> E{LVR > 80%?}
-    E -->|No| F["No LMI Required"]
-    E -->|Yes| G[LMI Rate Determination]
-    G --> H{LVR Range}
-    H -->|80-85%| I["LMI Rate: 0.5%"]
-    H -->|85-90%| J["LMI Rate: 1.0%"]
-    H -->|90-95%| K["LMI Rate: 1.5%"]
-    H -->|95%+| L["LMI Rate: 2.0%"]
-    I --> M[Calculate LMI]
-    J --> M
-    K --> M
+    subgraph "📊 Property & Loan Details"
+        A[🏠 Property Value<br/>${formatCurrency(inputs.propertyValue || 0)}]
+        B[💰 Loan Amount<br/>${formatCurrency(inputs.loanAmount)}]
+    end
+    
+    subgraph "🔢 LVR Calculation"
+        C[📊 Calculate LVR<br/>Loan ÷ Property Value]
+        D[📈 Your LVR<br/>${formatPercentage(loanToValueRatio)}]
+    end
+    
+    subgraph "❓ LMI Assessment"
+        E{🤔 Is LVR > 80%?}
+        F[✅ No LMI Required<br/>You're in the safe zone!]
+    end
+    
+    subgraph "💸 LMI Rate Determination"
+        G[📋 LMI Rate Table]
+        H[80-85% → 0.5% LMI Rate]
+        I[85-90% → 1.0% LMI Rate]
+        J[90-95% → 1.5% LMI Rate]
+        K[95%+ → 2.0% LMI Rate]
+    end
+    
+    subgraph "💰 Final Calculation"
+        L[🧮 LMI Amount<br/>Loan Amount × LMI Rate]
+        M[💸 Your LMI Cost<br/>${formatCurrency(results.lmiAmount)}]
+    end
+    
+    A --> C
+    B --> C
+    C --> D
+    D --> E
+    
+    E -->|No (LVR ≤ 80%)| F
+    E -->|Yes (LVR > 80%)| G
+    
+    G --> H
+    G --> I
+    G --> J
+    G --> K
+    
+    H --> L
+    I --> L
+    J --> L
+    K --> L
+    
+    B --> L
     L --> M
-    A --> M
-    M --> N["LMI = ${formatCurrency(results.lmiAmount)}"]
+    
+    classDef property fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef calculation fill:#fff2e8,stroke:#ff9800,stroke-width:2px
+    classDef decision fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    classDef rates fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    classDef result fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef good fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+    
+    class A,B property
+    class C,D calculation
+    class E decision
+    class F good
+    class G,H,I,J,K rates
+    class L,M result
                         `}
                       />
                     </Box>
@@ -408,26 +523,56 @@ flowchart TD
                     title="How Your Offset Account Works"
                     description="This diagram shows how your offset account reduces interest and provides tax-free savings benefits."
                     mermaidCode={`
-flowchart LR
-    A[Your Offset Account<br/>${formatCurrency(inputs.offsetBalance)}] 
-    B[Your Loan<br/>${formatCurrency(inputs.loanAmount)}]
-    C[Interest Calculated On<br/>${formatCurrency(Math.max(0, inputs.loanAmount - inputs.offsetBalance))}]
-    D[💰 Monthly Savings<br/>${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}]
-    E[✅ Benefits]
+flowchart TD
+    subgraph "💰 Your Financial Setup"
+        A[💳 Your Offset Account<br/>${formatCurrency(inputs.offsetBalance)}]
+        B[🏠 Your Home Loan<br/>${formatCurrency(inputs.loanAmount)}]
+    end
+    
+    subgraph "🔢 Interest Calculation Magic"
+        C[📊 Effective Loan Balance<br/>for Interest Calculation<br/>${formatCurrency(Math.max(0, inputs.loanAmount - inputs.offsetBalance))}]
+        D[💡 How It Works<br/>Interest calculated on<br/>Loan - Offset Balance]
+    end
+    
+    subgraph "💰 Monthly Savings Impact"
+        E[📈 Interest Rate Applied<br/>${formatPercentage(inputs.interestRate)}% p.a.]
+        F[💸 Monthly Interest Saved<br/>${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100 / 12)}]
+        G[📅 Annual Interest Saved<br/>${formatCurrency((inputs.offsetBalance * inputs.interestRate) / 100)}]
+    end
+    
+    subgraph "✨ Key Benefits"
+        H[🚫 No Tax on Savings<br/>Unlike term deposits]
+        I[💸 Instant Access<br/>Your money stays available]
+        J[📈 Effective Rate<br/>${formatPercentage(inputs.interestRate * (1 - inputs.offsetBalance / inputs.loanAmount))}% on remaining loan]
+        K[⚡ Compound Effect<br/>Savings accelerate over time]
+    end
     
     A -.->|Reduces| B
     B --> C
-    C --> D
-    D --> E
+    A --> D
+    D --> C
     
-    E --> F[🚫 No Tax on Savings]
-    E --> G[💸 Instant Access to Funds]
-    E --> H[📈 Effective Rate: ${formatPercentage(inputs.interestRate * (1 - inputs.offsetBalance / inputs.loanAmount))}%]
+    C --> E
+    E --> F
+    F --> G
     
-    style A fill:#e8f5e8
-    style D fill:#fff2e8
-    style E fill:#e8f0ff
-                    `}
+    F --> H
+    F --> I
+    C --> J
+    G --> K
+    
+    classDef account fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+    classDef loan fill:#fff2e8,stroke:#ff9800,stroke-width:2px
+    classDef calculation fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    classDef savings fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    classDef benefits fill:#e0f2f1,stroke:#009688,stroke-width:2px
+    
+    class A account
+    class B,C,D loan
+    class E calculation
+    class F,G savings
+    class H,I,J,K benefits
+                      `}
                   />
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
