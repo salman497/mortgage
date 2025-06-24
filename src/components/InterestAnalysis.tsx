@@ -173,16 +173,7 @@ sequenceDiagram
                 <Typography variant="h6">
                   Total Interest vs Principal
                 </Typography>
-                <MermaidDiagramModal
-                  title="Where Your Money Goes"
-                  description="This pie chart shows the total breakdown of what you'll pay - your original loan plus the interest cost."
-                  mermaidCode={`
-%%{init: {'pie': {'textPosition': 0.8}}}%%
-pie title "Total Cost: ${formatCurrency(inputs.loanAmount + Math.round(finalData?.cumulativeInterest || 0))}"
-    "Your Loan Amount" : ${inputs.loanAmount}
-    "Interest to Bank" : ${Math.round(finalData?.cumulativeInterest || 0)}
-                  `}
-                />
+                
               </Box>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
