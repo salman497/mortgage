@@ -107,11 +107,35 @@ const STORAGE_KEYS = {
   MORTGAGE_INPUTS: 'mortgageCalculator_mortgageInputs',
   PROPERTY_INPUTS: 'mortgageCalculator_propertyInputs',
   EXTRA_PAYMENT: 'mortgageCalculator_extraPayment',
-  TAB_VALUE: 'mortgageCalculator_tabValue',
+};
+
+// Helper functions for URL management
+const getTabFromUrl = (): number => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get('tab');
+  if (tabParam !== null) {
+    const tabValue = parseInt(tabParam, 10);
+    // Validate tab value is within range (0-4)
+    if (!isNaN(tabValue) && tabValue >= 0 && tabValue <= 4) {
+      return tabValue;
+    }
+  }
+  return 0; // Default to tab 0 if no valid tab parameter
+};
+
+const updateUrlTab = (tabValue: number) => {
+  const url = new URL(window.location.href);
+  if (tabValue === 0) {
+    // Remove tab parameter for tab 0 (clean URL)
+    url.searchParams.delete('tab');
+  } else {
+    url.searchParams.set('tab', tabValue.toString());
+  }
+  window.history.replaceState({}, '', url.toString());
 };
 
 function App() {
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(getTabFromUrl);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -141,10 +165,14 @@ function App() {
     loadFromStorage(STORAGE_KEYS.EXTRA_PAYMENT, DEFAULT_EXTRA_PAYMENT)
   );
 
-  // Load saved tab value
+  // Listen for browser back/forward navigation
   useEffect(() => {
-    const savedTab = loadFromStorage(STORAGE_KEYS.TAB_VALUE, 0);
-    setTabValue(savedTab);
+    const handlePopState = () => {
+      setTabValue(getTabFromUrl());
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // Save to localStorage whenever state changes
@@ -159,10 +187,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.EXTRA_PAYMENT, JSON.stringify(extraPayment));
   }, [extraPayment]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.TAB_VALUE, JSON.stringify(tabValue));
-  }, [tabValue]);
 
   // Sync interest rate between mortgage and property inputs
   const handleMortgageInputChange = (updates: Partial<MortgageInputs>) => {
@@ -199,6 +223,7 @@ function App() {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+    updateUrlTab(newValue);
   };
 
   const handleReset = () => {
@@ -212,6 +237,7 @@ function App() {
     setPropertyInputs(DEFAULT_PROPERTY_INPUTS);
     setExtraPayment(DEFAULT_EXTRA_PAYMENT);
     setTabValue(0);
+    updateUrlTab(0);
     setResetDialogOpen(false);
   };
 

@@ -6,7 +6,7 @@ Disallow: /*.json$
 Disallow: /*.xml$
 
 # Sitemap location
-Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: https://mortgage.evonix.tech/sitemap.xml
 
 # Crawl-delay for different bots
 User-agent: Googlebot
