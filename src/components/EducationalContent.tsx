@@ -290,7 +290,7 @@ const EducationalContent: React.FC = () => {
 
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 3 }}>
               <Box sx={{ flex: 1, bgcolor: 'primary.light', p: 2, borderRadius: 1 }}>
-                <Typography variant="h6" gutterBottom color="primary.main">
+                <Typography variant="h6" gutterBottom color="primary.dark">
                   Fixed Rate
                 </Typography>
                 <Typography variant="body2" paragraph>
@@ -323,7 +323,7 @@ const EducationalContent: React.FC = () => {
               </Box>
 
               <Box sx={{ flex: 1, bgcolor: 'success.light', p: 2, borderRadius: 1 }}>
-                <Typography variant="h6" gutterBottom color="success.main">
+                <Typography variant="h6" gutterBottom color="success.dark">
                   Variable Rate
                 </Typography>
                 <Typography variant="body2" paragraph>
