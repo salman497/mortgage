@@ -3,7 +3,6 @@ User-agent: *
 Allow: /
 Disallow: /static/
 Disallow: /*.json$
-Disallow: /*.xml$
 
 # Sitemap location
 Sitemap: https://mortgage.evonix.tech/sitemap.xml
